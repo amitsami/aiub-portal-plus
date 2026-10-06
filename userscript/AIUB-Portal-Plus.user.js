@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AIUB Portal+ — Modern UI
 // @namespace    aiub-portal-plus
-// @version      3.8.1
+// @version      3.8.2
 // @description  Modern, fast app-style UI for the AIUB student portal. Only changes the design. Your portal data never leaves your browser.
 // @author       amitsami
 // @homepageURL  https://github.com/amitsami/aiub-portal-plus
@@ -1135,10 +1135,26 @@
     var g = {}; list.forEach(function (r) { var k = r.fac_email; var a = g[k] || (g[k] = { e: k, n: r.fac_name, sum: 0, cnt: 0, cm: 0, courses: {} }); a.sum += r.stars; a.cnt++; if (r.comment) a.cm++; a.courses[r.course] = 1; });
     return Object.keys(g).map(function (k) { var a = g[k]; a.avg = a.sum / a.cnt; return a; });
   }
+  /* Server search: the app loads the newest 1000 reviews at once. When there are more, a search also asks the
+     server for every matching review (same fields as the local search), and the results are merged into the list. */
+  var rvSrch = {};
+  function rvSearch(q) {
+    if (!rvAll || rvAll.length < 1000 || rvSrch[q]) return;
+    var toks = q.split(" ").map(function (w) { return w.replace(/[,()"*\\]/g, ""); }).filter(Boolean).slice(0, 6);
+    if (!toks.length) return;
+    rvSrch[q] = [];
+    var f = toks.map(function (w) { var v = "*" + w + "*"; return "or(fac_name.ilike." + v + ",course.ilike." + v + ",comment.ilike." + v + ",semester.ilike." + v + ")"; }).join(",");
+    rvReq("reviews_public?select=" + RV_COLS + "&and=" + encodeURIComponent("(" + f + ")") + "&order=updated_at.desc&limit=1000").then(function (j) {
+      rvSrch[q] = Array.isArray(j) ? j : [];
+      if (current === "reviews" && rvState.tab === "all" && rvState.q.trim().toLowerCase().split(/\s+/).filter(Boolean).join(" ") === q) listDraw();
+    }, function () { delete rvSrch[q]; });
+  }
   function listDraw() {
     var box = $("#pp-rvlist", app); if (!box || !rvAll) return;
     var qs = rvState.q.trim().toLowerCase().split(/\s+/).filter(Boolean), rep = jget(RV_REP, {});
-    var list = rvAll.filter(function (r) { if (rvState.sort === "comments" && !r.comment) return false; if (!qs.length) return true; var x = facBy(r.fac_email), hay = (r.fac_name + " " + r.course + " " + (r.comment || "") + " " + r.semester + " " + (x ? x[3] + " " + x[2] : "")).toLowerCase(); return qs.every(function (w) { return hay.indexOf(w) >= 0; }); });
+    var base = rvAll;
+    if (qs.length) { var qk = qs.join(" "); rvSearch(qk); var extra = rvSrch[qk]; if (extra && extra.length) { var seen = {}; base = rvAll.concat(extra).filter(function (r) { if (seen[r.id]) return false; seen[r.id] = 1; return true; }); } }
+    var list = base.filter(function (r) { if (rvState.sort === "comments" && !r.comment) return false; if (!qs.length) return true; var x = facBy(r.fac_email), hay = (r.fac_name + " " + r.course + " " + (r.comment || "") + " " + r.semester + " " + (x ? x[3] + " " + x[2] : "")).toLowerCase(); return qs.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var html = "";
     if (rvState.sort === "faculty" || rvState.sort === "top") {
       var ag = facAgg(list); ag.sort(rvState.sort === "top" ? function (a, b) { return (b.avg * b.cnt / (b.cnt + 2) + 3 * 2 / (b.cnt + 2)) - (a.avg * a.cnt / (a.cnt + 2) + 3 * 2 / (a.cnt + 2)) || b.cnt - a.cnt; } : function (a, b) { return a.n.localeCompare(b.n); });

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.2 - Faculty review search now finds all reviews.
+
+- Searching in Faculty review -> All reviews now also searches the review server, so matching reviews are found even when there are more than 1000 reviews. Same page, same design.
+
 ## 3.8.1 - Faculty review server connected.
 
 - Faculty reviews are now connected to the built-in review server out of the box (Supabase, kept online by a GitHub Actions workflow). No setup needed.
