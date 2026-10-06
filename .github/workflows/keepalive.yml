@@ -1,0 +1,29 @@
+name: Keep review server awake
+
+on:
+  schedule:
+    - cron: "17 3 */2 * *"   # every 2 days (free Supabase projects pause after 7 days of inactivity)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping review server
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ vars.SUPABASE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+            echo "Set the SUPABASE_URL and SUPABASE_KEY repository variables." && exit 1
+          fi
+          AUTH=()
+          case "$SUPABASE_KEY" in sb_*) ;; *) AUTH=(-H "Authorization: Bearer $SUPABASE_KEY") ;; esac
+          code=$(curl -s -o body.txt -w "%{http_code}" --retry 3 --retry-delay 10 \
+            -H "apikey: $SUPABASE_KEY" "${AUTH[@]}" \
+            "${SUPABASE_URL%/}/rest/v1/reviews_public?select=id&limit=1")
+          echo "HTTP $code"; cat body.txt; echo
+          [ "$code" = "200" ]
