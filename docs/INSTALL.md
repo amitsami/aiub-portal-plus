@@ -21,6 +21,8 @@ AIUB Portal+ works on phone and PC. Pick one option.
 | **PC (no Tampermonkey)** | [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip) | 1. Download and **extract** (unzip) the file.<br>2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).<br>3. Turn on **Developer mode** -> **Load unpacked** -> choose the extracted folder.<br>4. Go to portal.aiub.edu. Do not delete the folder afterwards. |
 | **Tampermonkey zip** (phone **and** PC) | [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) | **Phone (Android, Firefox + Tampermonkey):** download the zip -> tap the Tampermonkey icon (Firefox menu -> Add-ons -> Tampermonkey) -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip from Downloads -> **Install**.<br>**PC:** Tampermonkey icon -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**.<br>Useful when the userscript link does not open an install page. Do not unzip it. |
 
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
+
 > `schema.sql` is only for the developer (review server database). Students do not need it.
 
 **Updates:** the userscript updates itself through Tampermonkey. The extension zip does not update itself; download the new zip from [Releases](https://github.com/amitsami/aiub-portal-plus/releases) and click **Reload** on the extensions page.
@@ -33,6 +35,8 @@ AIUB Portal+ works on phone and PC. Pick one option.
 4. Open https://portal.aiub.edu and sign in.
 
 Updates are installed automatically by Tampermonkey.
+
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
 
 ## Phone (iPhone / iPad)
 
@@ -56,7 +60,7 @@ Firefox: open `about:debugging#/runtime/this-firefox` -> **Load Temporary Add-on
 
 ## Tampermonkey zip import (phone and PC)
 
-The Tampermonkey zip works on **phones too**, not only on PC. Use it if opening the userscript link does not show an install page, or if you want to install from a downloaded file. Do **not** unzip it - Tampermonkey reads the zip directly.
+The Tampermonkey zip works on **phones too**, not only on PC. **If the `.js` link does not work on your phone, this zip works** - use it if opening the userscript link does not show an install page, or if you want to install from a downloaded file. Do **not** unzip it - Tampermonkey reads the zip directly.
 
 **On an Android phone (Firefox + Tampermonkey):**
 

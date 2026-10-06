@@ -39,6 +39,8 @@ You only need **one** of them. Do not install both at the same time.
 | **PC (no Tampermonkey)** | [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip) | 1. Download and **extract** (unzip) the file.<br>2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).<br>3. Turn on **Developer mode** -> **Load unpacked** -> choose the extracted folder.<br>4. Go to portal.aiub.edu. Do not delete the folder afterwards. |
 | **Tampermonkey zip** (phone **and** PC) | [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) | **Phone (Android, Firefox + Tampermonkey):** download the zip -> tap the Tampermonkey icon (Firefox menu -> Add-ons -> Tampermonkey) -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip from Downloads -> **Install**.<br>**PC:** Tampermonkey icon -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**.<br>Useful when the userscript link does not open an install page. Do not unzip it. |
 
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
+
 > `schema.sql` is only for the developer (review server database). Students do not need it.
 
 **Updates:** the userscript updates itself through Tampermonkey. The extension zip does not update itself; download the new zip from [Releases](https://github.com/amitsami/aiub-portal-plus/releases) and click **Reload** on the extensions page.
@@ -54,6 +56,8 @@ You only need **one** of them. Do not install both at the same time.
 6. Open https://portal.aiub.edu and sign in as usual. The new design appears automatically.
 
 Tip: in Firefox, tap the menu -> **Add to Home screen** while on the portal to open it like an app.
+
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
 
 ### iPhone / iPad
 
@@ -94,7 +98,7 @@ Firefox: open `about:debugging#/runtime/this-firefox` -> **Load Temporary Add-on
 
 ### Tampermonkey zip import (phone and PC)
 
-The Tampermonkey zip works on **phones too**, not only on PC. Use it if opening the userscript link does not show an install page, or if you want to install from a downloaded file. Do **not** unzip it - Tampermonkey reads the zip directly.
+The Tampermonkey zip works on **phones too**, not only on PC. **If the `.js` link does not work on your phone, this zip works** - use it if opening the userscript link does not show an install page, or if you want to install from a downloaded file. Do **not** unzip it - Tampermonkey reads the zip directly.
 
 **On an Android phone (Firefox + Tampermonkey):**
 
@@ -147,6 +151,7 @@ Scripts imported from the zip still auto-update from GitHub.
 | Problem | Fix |
 | --- | --- |
 | The portal looks unchanged | Check that the script / extension is **on**, then reload the page. In Chrome, Edge or Brave, make sure **Developer mode** (and **Allow User Scripts** for Tampermonkey) is on. |
+| The `.js` link does not work on my phone | Use the Tampermonkey zip instead - it works on phones. See [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc). |
 | Opening the userscript link only shows code | Tampermonkey is not installed or not enabled in this browser. Install it first, or use the Tampermonkey zip import. |
 | "Manifest file is missing" when loading the extension | Choose the folder that directly contains `manifest.json`, not the zip and not a parent folder. |
 | The extension stopped working | You probably moved or deleted the extracted folder. Load it again from its new location. |
