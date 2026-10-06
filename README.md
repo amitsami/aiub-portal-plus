@@ -4,6 +4,31 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 
 **[Install the userscript](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)** · **[Download the latest release](https://github.com/amitsami/aiub-portal-plus/releases/latest)** · **[Install guide](docs/INSTALL.md)**
 
+## Contents
+
+- [What is AIUB Portal+?](#what-is-aiub-portal)
+- [Which file should I download?](#which-file-should-i-download)
+- [Step-by-step install](#step-by-step-install)
+- [After installing: first use](#after-installing-first-use)
+- [Faculty reviews](#faculty-reviews)
+- [Updating](#updating)
+- [Turning it off or removing it](#turning-it-off-or-removing-it)
+- [Troubleshooting](#troubleshooting)
+- [Features](#features)
+- [Privacy](#privacy)
+- [For developers](#for-developers)
+
+## What is AIUB Portal+?
+
+AIUB Portal+ gives the official AIUB student portal (portal.aiub.edu) a modern, app-like look on your phone and PC. It does not replace the portal: you still sign in on portal.aiub.edu with your normal ID and password, and all buttons, forms and data come from the real portal. Portal+ only changes how it looks and makes it faster to use.
+
+There are two ways to use it:
+
+- **Userscript** (works on phone and PC): a small script that runs inside a free helper app called **Tampermonkey** (or **Userscripts** on iPhone). It updates itself automatically. **Recommended for most students.**
+- **Browser extension** (PC only): a zip file you load into Chrome, Edge or Brave. Use this if you do not want to install Tampermonkey.
+
+You only need **one** of them. Do not install both at the same time.
+
 ## Which file should I download?
 
 | Your device | Download this | How to use it |
@@ -17,6 +42,102 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 > `schema.sql` is only for the developer (review server database). Students do not need it.
 
 **Updates:** the userscript updates itself through Tampermonkey. The extension zip does not update itself; download the new zip from [Releases](https://github.com/amitsami/aiub-portal-plus/releases) and click **Reload** on the extensions page.
+## Step-by-step install
+
+### Android phone
+
+1. Open the **Play Store**, search for **Firefox** and install it. (Chrome on Android does not support add-ons, so Firefox is needed.)
+2. Open Firefox, tap the **menu (three dots)** -> **Add-ons** -> **Add-ons Manager**.
+3. Find **Tampermonkey** in the list (or search for it) and tap **+** -> **Add**.
+4. In Firefox, open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+5. Tampermonkey shows an install page. Tap **Install**.
+6. Open https://portal.aiub.edu and sign in as usual. The new design appears automatically.
+
+Tip: in Firefox, tap the menu -> **Add to Home screen** while on the portal to open it like an app.
+
+### iPhone / iPad
+
+1. Open the **App Store**, search for **Userscripts** (free, by Justin Wasack) and install it.
+2. Open **Settings -> Safari -> Extensions -> Userscripts**, turn it **on**, and set **portal.aiub.edu** (or All Websites) to **Allow**.
+3. Open the Userscripts app once and choose a folder to save scripts (for example, "On My iPhone -> Userscripts").
+4. In **Safari**, open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+5. Tap the **puzzle / aA icon** in the address bar -> **Userscripts** -> **Install**.
+6. Open https://portal.aiub.edu in Safari and sign in.
+
+### PC with Tampermonkey (recommended, auto-updates)
+
+Works in Chrome, Edge, Brave, Firefox and Opera.
+
+1. Install **Tampermonkey** from your browser's store:
+   - Chrome / Brave: [Chrome Web Store](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+   - Edge: [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+   - Firefox: [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/tampermonkey/)
+2. **Chrome / Edge / Brave only:** open the extensions page (`chrome://extensions`), turn on **Developer mode** (top right), then open Tampermonkey's **Details** and turn on **Allow User Scripts** if you see that option. Tampermonkey needs this to run scripts.
+3. Open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+4. Tampermonkey opens an install page. Click **Install**.
+5. Open https://portal.aiub.edu and sign in.
+
+### PC with the browser extension (no Tampermonkey)
+
+Works in Chrome, Edge and Brave.
+
+1. Download [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip).
+2. **Extract** the zip: right-click -> **Extract All** (Windows) or double-click (Mac). You get a folder with `manifest.json` inside.
+3. Move that folder somewhere safe (for example, Documents). **Do not delete it later** - the browser loads the extension from this folder.
+4. Open `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`).
+5. Turn on **Developer mode** (top right).
+6. Click **Load unpacked** and choose the extracted folder (the one that contains `manifest.json`).
+7. If the browser asks for permission for www.aiub.edu and api.open-meteo.com, allow it (used for public notices, the faculty list and campus weather).
+8. Open https://portal.aiub.edu and sign in.
+
+Firefox: open `about:debugging#/runtime/this-firefox` -> **Load Temporary Add-on** -> choose `manifest.json`. This lasts until Firefox restarts, so on Firefox the Tampermonkey method is better.
+
+### Tampermonkey zip import (backup method)
+
+Use this only if opening the userscript link does not show an install page.
+
+1. Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip).
+2. Open Tampermonkey -> **Dashboard** -> **Utilities**.
+3. Under **Import from file**, choose the zip -> **Install**.
+
+## After installing: first use
+
+1. Go to https://portal.aiub.edu and sign in with your AIUB ID and password as usual. The login captcha is a security check, so you still solve it yourself.
+2. After signing in, Portal+ opens its home screen: greeting, quick actions, routine, grades, payments and more.
+3. On a phone, use the **tab bar at the bottom**. On a PC, use the **sidebar on the left**.
+4. Open **Settings** in Portal+ to choose light / dark mode, accent color and your start page.
+5. The first load reads your data from the portal. After that, pages open much faster because data is cached on your device.
+
+## Faculty reviews
+
+- Open **Home -> Faculty review** (also in More / the sidebar).
+- **Give review:** shows every faculty you took a course with, semester by semester. Pick 1-5 stars, add an optional comment and tap **Submit**. You can edit or remove your review any time.
+- **All reviews:** see everyone's reviews with search, average rating by faculty, top rated and reviews with comments.
+- Reviews are **anonymous**: your name and student ID are never shown or sent. Abusive reviews can be reported and are hidden after 3 reports.
+- Faculty reviews are connected to the project's review server, kept online by a GitHub Actions workflow. You do not need to set anything up.
+
+## Updating
+
+- **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
+- **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
+- **Browser extension:** does not update itself. Download the new `AIUB-Portal-Plus-extension.zip` from [Releases](https://github.com/amitsami/aiub-portal-plus/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
+
+## Turning it off or removing it
+
+- **Tampermonkey:** click the Tampermonkey icon and switch **AIUB Portal+** off, or delete it in the Dashboard.
+- **Extension:** `chrome://extensions` -> turn the switch off, or click **Remove**.
+- To see the original portal layout without removing anything, open **Classic portal view** inside Portal+.
+
+## Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| The portal looks unchanged | Check that the script / extension is **on**, then reload the page. In Chrome, Edge or Brave, make sure **Developer mode** (and **Allow User Scripts** for Tampermonkey) is on. |
+| Opening the userscript link only shows code | Tampermonkey is not installed or not enabled in this browser. Install it first, or use the Tampermonkey zip import. |
+| "Manifest file is missing" when loading the extension | Choose the folder that directly contains `manifest.json`, not the zip and not a parent folder. |
+| The extension stopped working | You probably moved or deleted the extracted folder. Load it again from its new location. |
+| Faculty reviews do not load | Check your internet connection and tap **Refresh** on the Reviews page. |
+| Something else | [Open an issue](https://github.com/amitsami/aiub-portal-plus/issues) with your device, browser and a screenshot. |
 
 ## Features
 
@@ -33,24 +154,21 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 ## Privacy
 
 - Portal+ only changes how the portal looks in your browser. All data comes directly from portal.aiub.edu.
+- Your ID and password are typed into the real portal login page. Portal+ never reads or stores them.
 - Cached data stays on your device and is cleared when you sign out.
-- Faculty reviews are anonymous: your name and student ID are never sent.
+- Faculty reviews are anonymous: only the faculty, course, semester, stars, comment and a one-way scrambled code are sent. Your name and student ID are never sent.
 
-## Faculty review server
-
-Faculty reviews are connected to the project's review server, kept online by a GitHub Actions workflow. Nothing needs to be set up by users. The database schema is in [`server/schema.sql`](server/schema.sql).
-
-## Project structure
+## For developers
 
 | Path | Contents |
 | --- | --- |
 | `extension/` | Browser extension (Manifest V3) |
 | `userscript/` | Generated Tampermonkey userscript |
-| `server/schema.sql` | Review server database schema |
+| `server/schema.sql` | Review server database schema (developer only, students do not need it) |
 | `scripts/build.js` | Builds the userscript from the extension sources |
 | `docs/INSTALL.md` | Install guide |
 
-## Build
+Build the userscript after changing files in `extension/`:
 
 ```bash
 node scripts/build.js
