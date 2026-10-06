@@ -37,7 +37,7 @@ You only need **one** of them. Do not install both at the same time.
 | **iPhone / iPad** | [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js) | 1. Install the free **Userscripts** app from the App Store.<br>2. Settings -> Safari -> Extensions -> turn on **Userscripts** and allow portal.aiub.edu.<br>3. Open the userscript link in Safari -> tap the Userscripts icon -> **Install**.<br>4. Go to portal.aiub.edu. |
 | **PC (easiest, auto-updates)** | [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js) (just open the link) | 1. Install **Tampermonkey** from your browser's extension store (Chrome, Edge, Brave, Firefox, Opera).<br>2. Chrome / Edge: turn on **Developer mode** on the extensions page (Tampermonkey needs it).<br>3. Open the userscript link -> click **Install**.<br>4. Go to portal.aiub.edu. |
 | **PC (no Tampermonkey)** | [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip) | 1. Download and **extract** (unzip) the file.<br>2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).<br>3. Turn on **Developer mode** -> **Load unpacked** -> choose the extracted folder.<br>4. Go to portal.aiub.edu. Do not delete the folder afterwards. |
-| **Tampermonkey backup import** (any device) | [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) | Tampermonkey -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**. Use this only if the link install does not work. |
+| **Tampermonkey zip** (phone **and** PC) | [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) | **Phone (Android, Firefox + Tampermonkey):** download the zip -> tap the Tampermonkey icon (Firefox menu -> Add-ons -> Tampermonkey) -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip from Downloads -> **Install**.<br>**PC:** Tampermonkey icon -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**.<br>Useful when the userscript link does not open an install page. Do not unzip it. |
 
 > `schema.sql` is only for the developer (review server database). Students do not need it.
 
@@ -92,13 +92,27 @@ Works in Chrome, Edge and Brave.
 
 Firefox: open `about:debugging#/runtime/this-firefox` -> **Load Temporary Add-on** -> choose `manifest.json`. This lasts until Firefox restarts, so on Firefox the Tampermonkey method is better.
 
-### Tampermonkey zip import (backup method)
+### Tampermonkey zip import (phone and PC)
 
-Use this only if opening the userscript link does not show an install page.
+The Tampermonkey zip works on **phones too**, not only on PC. Use it if opening the userscript link does not show an install page, or if you want to install from a downloaded file. Do **not** unzip it - Tampermonkey reads the zip directly.
+
+**On an Android phone (Firefox + Tampermonkey):**
+
+1. Install Firefox and the Tampermonkey add-on (see [Android phone](#android-phone), steps 1-3).
+2. Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) in Firefox. It is saved to your **Downloads** folder.
+3. Open Firefox **menu (three dots)** -> **Add-ons** -> **Tampermonkey** -> **Dashboard**.
+4. Tap the **Utilities** tab.
+5. Under **Import from file**, tap **Choose file** and select `AIUB-Portal-Plus-Tampermonkey.zip` from Downloads.
+6. Tap **Install** (or **Import**) on the page that opens.
+7. Open https://portal.aiub.edu and sign in.
+
+**On a PC:**
 
 1. Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip).
-2. Open Tampermonkey -> **Dashboard** -> **Utilities**.
+2. Click the Tampermonkey icon -> **Dashboard** -> **Utilities**.
 3. Under **Import from file**, choose the zip -> **Install**.
+
+Scripts imported from the zip still auto-update from GitHub.
 
 ## After installing: first use
 
