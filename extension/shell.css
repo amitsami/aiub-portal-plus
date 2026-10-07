@@ -331,3 +331,14 @@ html[data-ap-mode="light"] #pp-cmd .pp-cmd-in { background: rgba(255,255,255,.88
 #pp-app .pp-upd-new { box-shadow: 0 0 0 2px rgba(var(--ap-accent-rgb), .55), var(--ap-shadow); }
 #pp-app .pp-updl { margin: 4px 0 12px; padding-left: 20px; line-height: 1.55; color: var(--ap-text); }
 #pp-app .pp-updl li { margin: 4px 0; }
+
+/* Home update banner (v3.9.2) */
+#pp-app .pp-updbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 14px 16px; }
+#pp-app .pp-updbar .pp-t { flex: 1; min-width: 0; }
+#pp-app .pp-updbar .pp-t b { display: block; font-size: 15px; }
+#pp-app .pp-updbar .pp-t small { display: block; color: var(--ap-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#pp-app .pp-updbar .pp-btn { flex: none; }
+#pp-app .pp-updbar .pp-iconbtn { flex: none; }
+#pp-app .pp-updbar.new { box-shadow: 0 0 0 2px rgba(var(--ap-accent-rgb), .55), var(--ap-shadow); }
+#pp-app .pp-updbar .pp-qi { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; background: rgba(var(--ap-accent-rgb), .12); color: var(--ap-accent); }
+#pp-app .pp-updbar .pp-qi svg { width: 20px; height: 20px; }

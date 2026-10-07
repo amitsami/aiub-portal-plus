@@ -141,7 +141,11 @@ Your CGPA is blurred everywhere (Grades page, CGPA chart, semester cards, What-i
 
 ## Updating
 
-When a new version is out, Portal+ tells you: open **More** (a red dot appears on it) and look at the **What's new / Update available** card. It lists the new features and has an **Update now** (Tampermonkey) or **Download update** (extension) button that opens GitHub.
+When a new version is out, Portal+ tells you automatically:
+
+- **Home** shows an **Update available** banner with the first new feature (tap **What's new**, or **X** to hide it for a day).
+- **More** gets a red dot and an **Update available** card with all new features and an **Update now** (Tampermonkey) or **Download update** (extension) button that opens GitHub.
+- After you update, Home shows **Updated to vX** once, and More shows your version with **Up to date** and what's new.
 
 - **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
 - **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
@@ -196,6 +200,14 @@ When a new version is out, Portal+ tells you: open **More** (a red dot appears o
 | `scripts/build.js` | Builds the userscript from the extension sources |
 | `update.json` | Latest version info shown in the app's What's new card (update it with every release) |
 | `docs/INSTALL.md` | Install guide |
+
+### Publishing an update (users are notified automatically)
+
+1. Change the files in `extension/`.
+2. Set the new version in `extension/manifest.json`.
+3. Add an entry at the top of `CHANGELOG.md`: `## <version> - Short title` followed by `- feature` lines (these lines are what users see).
+4. Run `node scripts/build.js` - it updates the userscript, the in-app version / What's new list and `update.json`.
+5. Commit and push to `main` (and create a release with the files). Within about an hour every Portal+ user sees **Update available** with the new features.
 
 Build the userscript after changing files in `extension/`:
 

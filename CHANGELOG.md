@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.9.2 - Update notice, Give review and Registration fixes.
+
+- When a new version is out, Home and More show "Update available" with the new features and a GitHub update link.
+- After you update, More shows your version, "Up to date" and what's new.
+- Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).
+- Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal.
+
 ## 3.9.1 - Faculty photos load reliably.
 
 - Faculty review: when www.aiub.edu is slow or busy, faculty photos are retried automatically (3 times), then the portal photo or initials are shown and tried again later (on refresh, when the connection comes back, or after 10 minutes). No more broken photo boxes.

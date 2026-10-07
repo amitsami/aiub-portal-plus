@@ -1,11 +1,12 @@
 {
-  "version": "3.9.1",
+  "version": "3.9.2",
   "date": "2026-10-07",
+  "title": "Update notice, Give review and Registration fixes.",
   "notes": [
-    "Faculty photos in Faculty review load reliably now. If aiub.edu is slow, photos are retried automatically.",
-    "CGPA is hidden (blurred) everywhere. Tap it to show, tap again to hide.",
-    "Faculty review: cleaner sorting with By faculty, Top rated and With comments.",
-    "“What’s new” section in More tells you when an update is out and links to GitHub."
+    "When a new version is out, Home and More show \"Update available\" with the new features and a GitHub update link.",
+    "After you update, More shows your version, \"Up to date\" and what's new.",
+    "Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).",
+    "Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal."
   ],
   "release": "https://github.com/amitsami/aiub-portal-plus/releases/latest"
 }

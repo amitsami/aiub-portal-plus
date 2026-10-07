@@ -448,7 +448,7 @@
         "</div>";
     });
   };
-  VIEWS.home.after = function () { tick(); wxPaint(); whenIdle(function () { updGet().then(paintBadges, function () {}); }, 1500, 8000);
+  VIEWS.home.after = function () { tick(); wxPaint(); updBar(); whenIdle(function () { updGet().then(function () { paintBadges(); updBar(); }, function () {}); }, 1500, 8000);
     whenIdle(function () { regStatus().then(function () { var b = $(".pp-regbtn", app); if (b && current === "home") b.outerHTML = regBtnHtml(peek("reg")); }, function () {}); }, 600, 3000);
     if (rvCfg() && Date.now() - rvAt > 60e3) whenIdle(function () { rvList().then(function () { var c = $(".pp-rvhome", app); if (c && current === "home") { c.outerHTML = rvHeroBtn(); rvPics(); } }, function () {}); }, 600, 3000);
     var qa = quickActions(); $$(".pp-quick a[data-qi]", app).forEach(function (a) { var x = qa[+a.getAttribute("data-qi")]; if (x && x[4]) a.__pre = x[4]; });
@@ -691,7 +691,11 @@
       var m = /^(\d{3,6})\s*-\s*(.*?)\s*\[([^\]]+)\]\s*$/.exec(t.replace(/\s+/g, " ")); var name = m ? m[2] : t.replace(/\s*\[[^\]]*\]\s*$/, ""), sec = m ? m[3] : ((/\[([^\]]+)\]/.exec(t) || [])[1] || "");
       var a = $("a[href*='/Student/Section']", p); var href = a ? a.getAttribute("href").split("#")[0] : "";
       var res = (/Result\s*:\s*([^\n]+)/i.exec(txt(body)) || [])[1] || "";
-      var drop = /drop|withdraw/i.test(txt(body)) && !/valid/i.test(txt(body));
+      // Dropped / withdrawn only when the Section Status or Result says so. (A "Drop" / "Withdraw" button on a
+      // running course during the drop or withdraw period must not hide the course.)
+      var bt = txt(body), stl = (/Section\s*Status\s*:?\s*([A-Za-z][A-Za-z ]{0,24})/i.exec(bt) || [])[1];
+      var drop = stl != null ? (/drop|withdr|cancel/i.test(stl) && !/valid/i.test(stl)) : /\b(dropped|withdrawn)\b/i.test(bt);
+      if (/^\s*U?W\b/.test(res)) drop = true;
       if (name && href && !drop) out.push({ name: name, sec: sec, href: href, res: res.trim() });
     });
     return out;
@@ -712,29 +716,29 @@
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function mfLoad(force, prog) {
     var old = mfGet();
-    if (!force && old && Date.now() - old.t < 12 * 3600e3) return Promise.resolve(old);
+    if (!force && old && old.v === 2 && Date.now() - old.t < 12 * 3600e3) return Promise.resolve(old);
     if (mfBusy) return mfBusy;
-    var secCache = {}; (old && old.sems || []).forEach(function (s) { s.courses.forEach(function (c) { if (c.t && c.t.length) secCache[c.href] = c.t; }); });
+    var secCache = {}, oldSem = {}; (old && old.sems || []).forEach(function (s) { oldSem[s.t] = s; s.courses.forEach(function (c) { if (c.t && c.t.length) secCache[c.href] = c.t; }); });
     mfBusy = D.reg().then(function (reg) {
       var sems = (reg.semesters || []).map(function (s) { var q = (/[?&]q=([^&#]+)/.exec(s.u || "") || [])[1]; return q ? { t: s.t, q: q } : null; }).filter(Boolean).reverse();
       if (!sems.length) throw new Error("Couldn’t find your semesters");
-      var out = { t: Date.now(), sems: [] }, i = 0, cur = reg.semester;
+      var out = { v: 2, t: Date.now(), sems: [] }, i = 0, cur = reg.semester;
       function step() {
         if (i >= sems.length) return out;
         var s = sems[i++]; mfProg = "Semester " + i + " of " + sems.length + " · " + s.t; mfTell(); if (prog) prog(mfProg, out);
         var past = old && old.sems.filter(function (x) { return x.t === s.t && x.done; })[0];
         if (past && s.t !== cur) { out.sems.push(past); return step(); }
         return getDoc("/Student/Home/CourseList?q=" + s.q).then(function (d) {
-          var cs = parseCourseList(d); if (!cs.length) return step();
+          var cs = parseCourseList(d); if (!cs.length) { if (oldSem[s.t]) out.sems.push(oldSem[s.t]); return step(); }  // keep what we had
           var sem = { t: s.t, courses: cs, done: true }; out.sems.push(sem);
           var j = 0;
           return (function nextC() {
             if (j >= cs.length) return step();
             var c = cs[j++]; if (secCache[c.href]) { c.t = secCache[c.href]; return nextC(); }
-            return wait(120).then(function () { return getDoc(c.href); }).then(function (sd) { c.t = parseSection(sd); }, function (e) { if (e && e.message === "SESSION") throw e; c.t = []; sem.done = false; })
+            return wait(120).then(function () { return getDoc(c.href); }).then(function (sd) { c.t = parseSection(sd); if (!c.t.length) sem.done = false; }, function (e) { if (e && e.message === "SESSION") throw e; c.t = []; sem.done = false; })
               .then(function () { if (prog) prog(mfProg, out); return nextC(); });
           })();
-        }, function (e) { if (e && e.message === "SESSION") throw e; return step(); });
+        }, function (e) { if (e && e.message === "SESSION") throw e; if (oldSem[s.t]) out.sems.push(oldSem[s.t]); return step(); });
       }
       return step();
     }).then(function (out) {
@@ -1347,42 +1351,65 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9.1";
+  var PP_VER = "3.9.2";
   var PP_NEW = [
-    "Faculty photos in Faculty review load reliably now. If aiub.edu is slow, photos are retried automatically.",
-    "CGPA is hidden (blurred) everywhere. Tap it to show, tap again to hide.",
-    "Faculty review: cleaner sorting with By faculty, Top rated and With comments.",
-    "\u201cWhat\u2019s new\u201d section in More tells you when an update is out and links to GitHub."
+    "When a new version is out, Home and More show \"Update available\" with the new features and a GitHub update link.",
+    "After you update, More shows your version, \"Up to date\" and what's new.",
+    "Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).",
+    "Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal."
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
       US_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js",
-      UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen";
+      UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen", UPD_LATER = "aiubPlus.update.later", VER_SEEN = "aiubPlus.ver.seen";
   function verCmp(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < Math.max(a.length, b.length); i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
   function isUS() { return typeof GM_info !== "undefined" || typeof GM_xmlhttpRequest === "function" || (typeof GM !== "undefined" && !!GM); }
   function updNewer() { var c = jget(UPD_KEY, null), d = c && c.d; return d && d.version && verCmp(d.version, PP_VER) > 0 ? d : null; }
   function updN() { var d = updNewer(); return d && jget(UPD_SEEN, "") !== d.version ? 1 : 0; }
   function updGet(force) {
     var c = jget(UPD_KEY, null);
-    if (!force && c && c.t && Date.now() - c.t < 6 * 36e5) return Promise.resolve(c.d);
+    if (!force && c && c.t && Date.now() - c.t < 36e5) return Promise.resolve(c.d);  // check GitHub at most once an hour
     if (!window.fetch) return Promise.resolve(c && c.d);
-    return fetch(UPD_URL + "?h=" + Math.floor(Date.now() / 36e5), { credentials: "omit", cache: "no-store" })
+    return fetch(UPD_URL + "?t=" + Math.floor(Date.now() / 6e4), { credentials: "omit", cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (d) { if (!d || !d.version) throw new Error("bad"); jset(UPD_KEY, { t: Date.now(), d: d }); return d; })
       .catch(function () { return c && c.d; });
   }
   function updCard() {
-    var d = updNewer(), us = isUS(), notes = d ? (Array.isArray(d.notes) ? d.notes : []) : PP_NEW;
+    var d = updNewer(), us = isUS(), c = jget(UPD_KEY, null), rd = c && c.d;
+    var notes = d ? (Array.isArray(d.notes) ? d.notes : []) : (rd && rd.version === PP_VER && Array.isArray(rd.notes) && rd.notes.length ? rd.notes : PP_NEW);
     var link = d ? (us ? US_URL : (d.release || GH_REPO + "/releases/latest")) : GH_REPO + "/releases/latest";
-    return '<div class="pp-card pp-upd' + (d ? " pp-upd-new" : "") + '" id="pp-upd"><h3>' + ic(d ? "spark" : "check") + (d ? " Update available" + NEWDOT : " What\u2019s new") +
-      '<span class="pp-more"><span class="pp-chip">v' + esc(d ? d.version : PP_VER) + "</span></span></h3>" +
-      '<p class="pp-note" style="margin:0 0 8px">' + (d ? "AIUB Portal+ v" + esc(d.version) + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You have the latest version (v" + PP_VER + "). New in this version:") + "</p>" +
+    var head = d ? ic("spark") + " Update available" + NEWDOT + '<span class="pp-more"><span class="pp-chip">v' + esc(d.version) + "</span></span>"
+                 : ic("check") + " AIUB Portal+ v" + PP_VER + '<span class="pp-more"><span class="pp-chip ok">\u2713 Up to date</span></span>';
+    return '<div class="pp-card pp-upd' + (d ? " pp-upd-new" : "") + '" id="pp-upd"><h3>' + head + "</h3>" +
+      '<p class="pp-note" style="margin:0 0 8px">' + (d ? "<b>AIUB Portal+ v" + esc(d.version) + "</b>" + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You are using the latest version. What\u2019s new in v" + PP_VER + ":") + "</p>" +
       '<ul class="pp-updl">' + notes.slice(0, 10).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
       (d ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your Portal+ folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
       '<div class="pp-row" style="gap:8px;flex-wrap:wrap">' + (d ? '<a class="pp-btn pri sm" href="' + esc(link) + '" target="_blank" rel="noopener">' + ic("refresh") + (us ? " Update now" : " Download update") + "</a>" : "") +
       '<a class="pp-btn sm" href="' + GH_REPO + '/releases/latest" target="_blank" rel="noopener">' + ic("github") + " View on GitHub</a></div></div>";
   }
-  function updPaint() { var c = $("#pp-upd", app); if (c && current === "more") c.outerHTML = updCard(); var d = updNewer(); if (d && current === "more") jset(UPD_SEEN, d.version); paintBadges(); }
+  /* Home banner: "Update available" (until updated; "Later" hides it for a day) or, once, "Updated to vX". */
+  function updBarHtml() {
+    var d = updNewer(), seen = jget(VER_SEEN, "");
+    if (d) {
+      if (+jget(UPD_LATER + "." + d.version, 0) > Date.now()) return "";
+      return '<div class="pp-card pp-updbar new" id="pp-updbar"><span class="pp-qi">' + ic("spark") + '</span><div class="pp-t"><b>Update available \u00b7 v' + esc(d.version) + "</b><small>" + esc((d.notes || [])[0] || "New features and fixes") + '</small></div><a class="pp-btn pri sm" href="#/more" data-upd="more">What\u2019s new</a><button class="pp-iconbtn" data-upd="later" title="Later" aria-label="Later">' + ic("x") + "</button></div>";
+    }
+    if (seen && seen !== PP_VER) return '<div class="pp-card pp-updbar" id="pp-updbar"><span class="pp-qi">' + ic("check") + '</span><div class="pp-t"><b>Updated to v' + PP_VER + " \ud83c\udf89</b><small>You are up to date. See what\u2019s new in this version.</small></div>" + '<a class="pp-btn sm" href="#/more" data-upd="more">What\u2019s new</a><button class="pp-iconbtn" data-upd="ok" title="Close" aria-label="Close">' + ic("x") + "</button></div>";
+    if (!seen) jset(VER_SEEN, PP_VER);  // first install: nothing to announce
+    return "";
+  }
+  function updBar() {
+    if (current !== "home" || !scroller) return; var v = $(".pp-view", scroller); if (!v) return;
+    var old = $("#pp-updbar", v), h = updBarHtml(); if (old) old.remove(); if (!h) return;
+    v.insertAdjacentHTML("afterbegin", h); var bar = $("#pp-updbar", v), d = updNewer();
+    $$("[data-upd]", bar).forEach(function (b) { b.onclick = function (e) { var a = b.getAttribute("data-upd");
+      if (a === "later") { e.preventDefault(); if (d) jset(UPD_LATER + "." + d.version, Date.now() + 864e5); bar.remove(); }
+      else if (a === "ok") { e.preventDefault(); jset(VER_SEEN, PP_VER); bar.remove(); }
+      else { if (!d) jset(VER_SEEN, PP_VER); updGo = 1; } }; });
+  }
+  var updGo = 0;
+  function updPaint() { var c = $("#pp-upd", app); if (c && current === "more") { c.outerHTML = updCard(); if (!updNewer()) jset(VER_SEEN, PP_VER); if (updGo) { updGo = 0; var n = $("#pp-upd", app); if (n && n.scrollIntoView) n.scrollIntoView({ block: "start", behavior: "smooth" }); } } var d = updNewer(); if (d && current === "more") jset(UPD_SEEN, d.version); paintBadges(); }
 
   var GROUP_IC = { Academics: "book", "Grade Reports": "award", Library: "lib", Others: "file", Messages: "mail" };
   VIEWS.more = function (p, f) {
@@ -1402,7 +1429,7 @@
         '<a class="pp-item" href="https://github.com/amitsami" target="_blank" rel="noopener">' + ic("github") + '<div class="pp-t"><small>GitHub</small><b>github.com/amitsami</b></div>' + ic("ext") + "</a></div></div>";
     });
   };
-  VIEWS.more.after = function () { cgWire(); updPaint(); updGet().then(updPaint); var lo = $("#pp-logout", app); if (lo) lo.onclick = function () { clearCache(); try { localStorage.removeItem(MF_KEY); mf = null; } catch (e) {} try { sessionStorage.clear(); } catch (e) {} }; $$("svg.flip", app).forEach(function (s) { s.style.transform = "rotate(180deg)"; s.style.opacity = ".5"; }); };
+  VIEWS.more.after = function () { cgWire(); updPaint(); var uc = jget(UPD_KEY, null); updGet(!uc || Date.now() - uc.t > 3e5).then(updPaint); var lo = $("#pp-logout", app); if (lo) lo.onclick = function () { clearCache(); try { localStorage.removeItem(MF_KEY); mf = null; } catch (e) {} try { sessionStorage.clear(); } catch (e) {} }; $$("svg.flip", app).forEach(function (s) { s.style.transform = "rotate(180deg)"; s.style.opacity = ".5"; }); };
 
   /* ---------- settings ---------- */
   VIEWS.settings = function () {
@@ -1429,7 +1456,13 @@
   };
   VIEWS.classic.after = function () {
     var fr = $("#pp-frame", app); if (!fr) return;
-    fr.addEventListener("load", function () { try { var d = fr.contentDocument; if (d && d.getElementById("loginForm")) { location.href = "/"; } } catch (e) {} });
+    var startU = (fr.getAttribute("src") || "").split("?")[0], HOME_RX = /^\/Student\/?(Home(\/Index)?\/?)?$/i;
+    fr.addEventListener("load", function () { try { var d = fr.contentDocument; if (d && d.getElementById("loginForm")) { location.href = "/"; return; }
+      // A classic page (e.g. Registration -> Cancel, or registration closed) went back to the portal home:
+      // show the Portal+ home instead of the old layout.
+      var pth = fr.contentWindow.location.pathname;
+      if (current === "classic" && HOME_RX.test(pth) && !HOME_RX.test(startU)) { go("#/home"); }
+    } catch (e) {} });
   };
 
   /* ------------------------------------------------------------ start */

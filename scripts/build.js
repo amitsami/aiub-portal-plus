@@ -34,18 +34,27 @@ const header = [
   "// ==/UserScript==",
 ].join("\n");
 
-// Safety checks: the in-app version (PP_VER in shell.js) and update.json must match manifest.json.
-const ppVer = (/var PP_VER = "([^"]+)"/.exec(ext("shell.js")) || [])[1];
-if (ppVer !== manifest.version) {
-  console.error("Version mismatch: manifest.json is " + manifest.version + " but PP_VER in shell.js is " + ppVer);
+// Version + "What's new": manifest.json is the version, the top CHANGELOG.md entry is the feature list.
+// The build writes both into shell.js (PP_VER / PP_NEW) and update.json, so pushing a new build to GitHub
+// is enough for every Portal+ user to see "Update available" with the new features.
+const top = /^## ([0-9][0-9.]*)\s*-?\s*(.*)\n([\s\S]*?)(?=^## |(?![\s\S]))/m.exec(fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8"));
+if (!top || top[1] !== manifest.version) {
+  console.error("CHANGELOG.md must start with an entry for " + manifest.version + ' (for example "## ' + manifest.version + ' - Short title").');
   process.exit(1);
 }
-try {
-  const upd = JSON.parse(fs.readFileSync(path.join(root, "update.json"), "utf8"));
-  if (upd.version !== manifest.version) console.warn("Warning: update.json version (" + upd.version + ") differs from manifest.json (" + manifest.version + ")");
-} catch (e) {
-  console.warn("Warning: update.json is missing or invalid");
-}
+const notes = top[3].split("\n").filter((l) => /^\s*[-*] /.test(l)).map((l) => l.replace(/^\s*[-*] /, "").replace(/\*\*|`/g, "").trim()).filter(Boolean);
+const asciiJson = (v) => JSON.stringify(v).replace(/[\u007f-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+const shellPath = path.join(root, "extension", "shell.js");
+let shell = fs.readFileSync(shellPath, "utf8");
+const shell2 = shell
+  .replace(/var PP_VER = "[^"]*";/, "var PP_VER = " + JSON.stringify(manifest.version) + ";")
+  .replace(/  var PP_NEW = \[[\s\S]*?\n  \];/, () => "  var PP_NEW = [\n" + notes.map((n) => "    " + asciiJson(n)).join(",\n") + "\n  ];");
+if (!/var PP_VER = /.test(shell2) || !/var PP_NEW = \[/.test(shell2)) { console.error("PP_VER / PP_NEW not found in shell.js"); process.exit(1); }
+if (shell2 !== shell) fs.writeFileSync(shellPath, shell2);
+const today = new Date().toISOString().slice(0, 10);
+let prevUpd = {}; try { prevUpd = JSON.parse(fs.readFileSync(path.join(root, "update.json"), "utf8")); } catch (e) {}
+const upd = { version: manifest.version, date: prevUpd.version === manifest.version && prevUpd.date ? prevUpd.date : today, title: top[2].trim(), notes: notes, release: "https://github.com/amitsami/aiub-portal-plus/releases/latest" };
+fs.writeFileSync(path.join(root, "update.json"), JSON.stringify(upd, null, 2) + "\n");
 
 const css = ["theme.css", "shell.css", "glass.css"].map(ext).join("\n");
 const style =
