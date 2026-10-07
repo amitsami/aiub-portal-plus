@@ -10,6 +10,7 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 - [Which file should I download?](#which-file-should-i-download)
 - [Step-by-step install](#step-by-step-install)
 - [After installing: first use](#after-installing-first-use)
+- [CGPA privacy](#cgpa-privacy)
 - [Faculty reviews](#faculty-reviews)
 - [Updating](#updating)
 - [Turning it off or removing it](#turning-it-off-or-removing-it)
@@ -126,15 +127,21 @@ Scripts imported from the zip still auto-update from GitHub.
 4. Open **Settings** in Portal+ to choose light / dark mode, accent color and your start page.
 5. The first load reads your data from the portal. After that, pages open much faster because data is cached on your device.
 
+## CGPA privacy
+
+Your CGPA is blurred everywhere (Grades page, CGPA chart, semester cards, What-if calculator, More profile and the classic portal), so people near your screen cannot see it. **Tap the blurred CGPA to show it, tap again to hide it.** It hides again automatically when you open another page.
+
 ## Faculty reviews
 
 - Open **Home -> Faculty review** (also in More / the sidebar).
 - **Give review:** shows every faculty you took a course with, semester by semester. Pick 1-5 stars, add an optional comment and tap **Submit**. You can edit or remove your review any time.
-- **All reviews:** see everyone's reviews with search, average rating by faculty, top rated and reviews with comments.
+- **All reviews:** see everyone's reviews with search and three views: **By faculty** (average rating), **Top rated** and **With comments**. Tap a faculty to see all of their reviews.
 - Reviews are **anonymous**: your name and student ID are never shown or sent. Abusive reviews can be reported and are hidden after 3 reports.
 - Faculty reviews are connected to the project's review server, kept online by a GitHub Actions workflow. You do not need to set anything up.
 
 ## Updating
+
+When a new version is out, Portal+ tells you: open **More** (a red dot appears on it) and look at the **What's new / Update available** card. It lists the new features and has an **Update now** (Tampermonkey) or **Download update** (extension) button that opens GitHub.
 
 - **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
 - **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
@@ -168,6 +175,8 @@ Scripts imported from the zip still auto-update from GitHub.
 - Live campus weather for AIUB
 - Faculty list with photos, rooms and emails
 - Anonymous faculty reviews (1-5 stars + comment), shared between all Portal+ users
+- CGPA privacy: CGPA is blurred everywhere until you tap it
+- "What's new" section in More with update alerts and a GitHub update link
 - Fast loading with smart background caching
 
 ## Privacy
@@ -185,6 +194,7 @@ Scripts imported from the zip still auto-update from GitHub.
 | `userscript/` | Generated Tampermonkey userscript |
 | `server/schema.sql` | Review server database schema (developer only, students do not need it) |
 | `scripts/build.js` | Builds the userscript from the extension sources |
+| `update.json` | Latest version info shown in the app's What's new card (update it with every release) |
 | `docs/INSTALL.md` | Install guide |
 
 Build the userscript after changing files in `extension/`:

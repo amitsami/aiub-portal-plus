@@ -387,7 +387,7 @@
     movePill();
     var params = {}; q.split("&").forEach(function (kv) { if (!kv) return; var p = kv.split("="); params[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ""); });
     var id = ++renderId, prevR = current; current = r;
-    if (r !== prevR) { RECENT = {}; clearTimeout(route.seenT); }
+    if (r !== prevR) { RECENT = {}; clearTimeout(route.seenT); app.classList.remove("pp-cgon"); }
     var shown = false, skT = silent ? null : setTimeout(function () { if (id === renderId && !shown) scroller.innerHTML = skeleton(); }, 90);  // skeleton only if slow
     if (!force && r !== prevR) scTop(0);
     Promise.resolve().then(function () { return VIEWS[r](params, !!force && !silent); }).then(function (html) { shown = true; clearTimeout(skT); if (id !== renderId) return; swap(silent ? html.replace('class="pp-view"', 'class="pp-view pp-quiet"') : html, function () { scroller.setAttribute("data-r", r); if (VIEWS[r].after) VIEWS[r].after(params); animate(); topCheck(); requestAnimationFrame(function () { setTimeout(paintBadges, 0); }); scheduleSeen(r); }); })
@@ -448,7 +448,7 @@
         "</div>";
     });
   };
-  VIEWS.home.after = function () { tick(); wxPaint();
+  VIEWS.home.after = function () { tick(); wxPaint(); whenIdle(function () { updGet().then(paintBadges, function () {}); }, 1500, 8000);
     whenIdle(function () { regStatus().then(function () { var b = $(".pp-regbtn", app); if (b && current === "home") b.outerHTML = regBtnHtml(peek("reg")); }, function () {}); }, 600, 3000);
     if (rvCfg() && Date.now() - rvAt > 60e3) whenIdle(function () { rvList().then(function () { var c = $(".pp-rvhome", app); if (c && current === "home") { c.outerHTML = rvHeroBtn(); rvPics(); } }, function () {}); }, 600, 3000);
     var qa = quickActions(); $$(".pp-quick a[data-qi]", app).forEach(function (a) { var x = qa[+a.getAttribute("data-qi")]; if (x && x[4]) a.__pre = x[4]; });
@@ -484,7 +484,7 @@
   function paintBadges() {
     if (!app) return; var cnt = {}, more = 0, tabs = {}; NAV.forEach(function (n) { if (n.tab) tabs[n.r] = 1; });
     Object.keys(TRK).forEach(function (t) { var n = freshOf(t).length; cnt[TRK[t].r] = (cnt[TRK[t].r] || 0) + n; if (!tabs[TRK[t].r]) more += n; });
-    $$(".pp-nav a[data-r], .pp-tabbar a[data-r], .pp-quick a[data-r], .pp-bell", app).forEach(function (a) { var r = a.getAttribute("data-r"); setBadge(a, r === "more" && a.closest(".pp-tabbar") ? more : cnt[r] || 0); });
+    $$(".pp-nav a[data-r], .pp-tabbar a[data-r], .pp-quick a[data-r], .pp-bell", app).forEach(function (a) { var r = a.getAttribute("data-r"); setBadge(a, (r === "more" ? updN() : 0) + (r === "more" && a.closest(".pp-tabbar") ? more : cnt[r] || 0)); });
     try { var tot = Object.keys(cnt).reduce(function (a, k) { return a + cnt[k]; }, 0); document.title = (tot ? "(" + tot + ") " : "") + "AIUB Portal+"; } catch (e) {}
   }
 
@@ -758,7 +758,7 @@
   function agoIso(s) { var t = Date.parse(s); return !t ? "" : Date.now() - t < 60e3 ? "just now" : ago(t); }
   function rvPics() { if (!app || !peek("faculty")) return; facIdx = null; $$(".pp-rvpic[data-e]", app).forEach(function (el) { var x = facBy(el.getAttribute("data-e")); if (!x || !x[7]) return; var im = $("img", el), src = SITE + x[7]; if (im && im.getAttribute("src") === src) return; if (!im) { im = document.createElement("img"); im.alt = ""; im.decoding = "async"; im.onerror = function () { im.remove(); }; el.appendChild(im); } im.src = src; }); }
 
-  var rvState = { tab: "give", q: "", sort: "latest", show: 30 };
+  var rvState = { tab: "give", q: "", sort: "faculty", show: 30 };
   VIEWS.reviews = function (p) {
     if (p.tab) rvState.tab = p.tab;
     setHead("Reviews", "Faculty review · anonymous", '<button class="pp-btn sm" data-rv="reload">' + ic("refresh") + " Refresh</button>");
@@ -843,7 +843,7 @@
     }
     var focused = document.activeElement && document.activeElement.id === "pp-rvq";
     box.innerHTML = '<div class="pp-search" style="margin-bottom:10px">' + ic("search") + '<input class="pp-input" id="pp-rvq" placeholder="Search faculty, course or comment" value="' + esc(rvState.q) + '" autocomplete="off" enterkeyhint="search"></div>' +
-      '<div class="pp-tabs pp-fchips" style="margin-bottom:12px"><button data-so="latest" class="' + (rvState.sort === "latest" ? "on" : "") + '">Latest</button><button data-so="faculty" class="' + (rvState.sort === "faculty" ? "on" : "") + '">By faculty</button><button data-so="top" class="' + (rvState.sort === "top" ? "on" : "") + '">Top rated</button><button data-so="comments" class="' + (rvState.sort === "comments" ? "on" : "") + '">With comments</button></div>' +
+      '<div class="pp-tabs pp-fchips" style="margin-bottom:12px"><button data-so="faculty" class="' + (rvState.sort === "faculty" ? "on" : "") + '">By faculty</button><button data-so="top" class="' + (rvState.sort === "top" ? "on" : "") + '">Top rated</button><button data-so="comments" class="' + (rvState.sort === "comments" ? "on" : "") + '">With comments</button></div>' +
       '<div id="pp-rvlist"></div>';
     var inp = $("#pp-rvq", box), tm;
     inp.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { rvState.q = inp.value; rvState.show = 30; listDraw(); }, 140); };
@@ -1032,6 +1032,13 @@
       return '<div class="pp-view pp-ndetail"><div class="pp-card"><div class="pp-chip mute" style="margin-bottom:10px">' + ic("cal") + " " + esc(n.date) + '</div><h2 class="pp-ntitle">' + esc(n.title) + '</h2><div class="pp-nbody">' + (n.body || "<p>(No text — open on aiub.edu)</p>") + '</div><div class="pp-row" style="margin-top:18px"><a class="pp-btn" href="#/notices">← All notices</a><a class="pp-btn pri" target="_blank" rel="noopener" href="' + SITE + esc(u) + '">' + ic("ext") + " Open on aiub.edu</a></div></div></div>";
     });
   };
+  /* CGPA privacy: every CGPA is blurred until tapped; tap again to blur it. Resets when you change page. */
+  function cgB(v, tag) { tag = tag || "span"; return "<" + tag + ' class="pp-cgb" role="button" tabindex="0" title="Tap to show / hide CGPA">' + v + "</" + tag + ">"; }
+  function cgWire() {
+    if (cgWire.on || !app) return; cgWire.on = 1;
+    function tg(e) { var b = e.target.closest && e.target.closest(".pp-cgb"); if (!b || !app.contains(b)) return; if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return; e.preventDefault(); e.stopPropagation(); app.classList.toggle("pp-cgon"); }
+    app.addEventListener("click", tg, true); app.addEventListener("keydown", tg, true);
+  }
   function stat(c, i, k, v, s) { return '<div class="pp-card pp-stat"><span class="pp-ic ' + c + '">' + ic(i) + "</span><small>" + k + "</small><b>" + v + "</b><span>" + s + "</span></div>"; }
   function progressBar(core) {
     var n = core.length || 1, d = core.filter(function (c) { return c.status === "done"; }).length, r = core.filter(function (c) { return c.status === "running"; }).length, t = core.filter(function (c) { return c.status === "retake"; }).length, rem = n - d - r - t;
@@ -1182,24 +1189,24 @@
     return Promise.all([D.sem(f), D.curr(f).catch(function () { return { info: {} }; })]).then(function (r) {
       var sem = r[0], info = r[1].info || {}; var sems = sem.sems.filter(function (s) { return s.cgpa != null && s.courses.length; });
       var cg = info["Cgpa"] || (sems.length ? sems[sems.length - 1].cgpa.toFixed(2) : "—");
-      setHead("Grades & CGPA", "CGPA " + cg + " · " + (info["Credit(s) Completed"] || "") + " credits");
+      setHead("Grades & CGPA", "CGPA " + cgB(cg) + " · " + (info["Credit(s) Completed"] || "") + " credits");
       var dist = {}; ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F", "W"].forEach(function (g) { dist[g] = 0; });
       sem.sems.forEach(function (s) { s.courses.forEach(function (c) { if (dist[c.g] != null) dist[c.g]++; }); });
       var mx = Math.max.apply(null, Object.keys(dist).map(function (k) { return dist[k]; }).concat([1]));
       var colors = { "A+": "#10b981", "A": "#22c55e", "B+": "#3b82f6", "B": "#6366f1", "C+": "#f59e0b", "C": "#f97316", "D+": "#fb7185", "D": "#f43f5e", "F": "#dc2626", "W": "#94a3b8" };
       var best = sems.slice().sort(function (a, b) { return b.gpa - a.gpa; })[0];
-      var h = '<div class="pp-view"><div class="pp-grid pp-g4">' + stat("pp-c1", "award", "CGPA", cg, "Current") + stat("pp-c2", "check", "Credits", info["Credit(s) Completed"] || "—", (info["Course(s) Completed"] || "") + " courses") +
+      var h = '<div class="pp-view"><div class="pp-grid pp-g4">' + stat("pp-c1", "award", "CGPA", cgB(cg), "Current · tap to show") + stat("pp-c2", "check", "Credits", info["Credit(s) Completed"] || "—", (info["Course(s) Completed"] || "") + " courses") +
         stat("pp-c3", "flash", "Best semester", best ? best.gpa.toFixed(2) : "—", best ? esc(best.name) : "") + stat("pp-c4", "cal", "Semesters", sems.length, "with results") + "</div>" +
-        '<div class="pp-grid pp-g-21"><div class="pp-card"><h3>' + ic("award") + " CGPA trend</h3>" + chart(sems) + '<div class="pp-legend"><span><i style="background:var(--ap-accent)"></i>CGPA</span><span><i style="background:rgba(var(--ap-accent2-rgb),.35)"></i>Semester GPA</span></div></div>' +
+        '<div class="pp-grid pp-g-21"><div class="pp-card"><h3>' + ic("award") + " CGPA trend</h3>" + cgB(chart(sems), "div") + '<div class="pp-legend"><span><i style="background:var(--ap-accent)"></i>CGPA</span><span><i style="background:rgba(var(--ap-accent2-rgb),.35)"></i>Semester GPA</span></div></div>' +
         '<div class="pp-card"><h3>' + ic("list") + ' Grade distribution</h3><div class="pp-dist">' + Object.keys(dist).map(function (g, i) { return '<div><span>' + dist[g] + '</span><i style="height:' + Math.max(4, dist[g] / mx * 100) + "%;background:" + colors[g] + ";animation-delay:" + (i * .05) + 's"></i>' + g + "</div>"; }).join("") + "</div></div></div>" +
         calcCard(num(cg), num(info["Credit(s) Completed"])) +
         sem.sems.slice().reverse().map(function (s) { if (!s.courses.length) return "";
-          return '<div class="pp-card" style="margin-bottom:14px"><h3>' + esc(s.name) + '<span class="pp-more" style="color:var(--ap-muted)">' + (s.gpa != null ? 'GPA <b style="color:var(--ap-text)">' + s.gpa.toFixed(2) + '</b> · CGPA <b style="color:var(--ap-text)">' + s.cgpa.toFixed(2) + "</b>" : "In progress") + '</span></h3><div class="pp-list">' +
+          return '<div class="pp-card" style="margin-bottom:14px"><h3>' + esc(s.name) + '<span class="pp-more" style="color:var(--ap-muted)">' + (s.gpa != null ? 'GPA <b style="color:var(--ap-text)">' + s.gpa.toFixed(2) + '</b> · CGPA <b style="color:var(--ap-text)">' + cgB(s.cgpa.toFixed(2)) + "</b>" : "In progress") + '</span></h3><div class="pp-list">' +
             s.courses.map(function (c) { return '<div class="pp-course" style="padding:11px 14px"><span class="pp-code">' + esc(c.id) + '</span><div class="pp-t"><b>' + esc(title(c.name)) + (c.g && c.g !== "-" && isNewSig("grades", s.name + "|" + c.id + "|" + c.g) ? NEWDOT : "") + "</b><small>" + c.cr + " credit" + (c.mid ? " · Mid " + esc(c.mid) : "") + (c.fin ? " · Final " + esc(c.fin) : "") + "</small></div>" + (c.g ? gchip(c.g) : '<span class="pp-chip mute">—</span>') + "</div>"; }).join("") + "</div></div>"; }).join("") + "</div>";
       return h;
     });
   };
-  VIEWS.grades.after = function () { calcWire(); };
+  VIEWS.grades.after = function () { cgWire(); calcWire(); };
   function chart(sems) {
     if (sems.length < 1) return '<div class="pp-empty">No data yet</div>';
     var W = 640, H = 220, pl = 34, pr = 14, pt = 16, pb = 34, lo = 2, hi = 4;
@@ -1215,7 +1222,7 @@
   function calcCard(cg, cr) {
     return '<div class="pp-card" style="margin-bottom:16px" id="pp-calc" data-cg="' + cg + '" data-cr="' + cr + '"><h3>' + ic("flash") + ' What-if CGPA calculator<span class="pp-more" style="color:var(--ap-muted)">Enter expected grades to see your new CGPA</span></h3>' +
       '<div class="pp-grid pp-g-21" style="margin:0"><div><div class="pp-calc-row" style="font-size:12px;color:var(--ap-muted);font-weight:700"><span>COURSE</span><span>CREDIT</span><span>GRADE</span><span></span></div><div id="pp-calc-rows"></div><button class="pp-btn sm" id="pp-calc-add">' + ic("plus") + ' Add course</button></div>' +
-      '<div style="text-align:center;align-self:center"><div style="color:var(--ap-muted);font-weight:600;font-size:13px">Projected CGPA</div><div class="pp-big" id="pp-calc-out">' + (cg ? cg.toFixed(2) : "—") + '</div><div id="pp-calc-diff" style="font-weight:700"></div><div style="color:var(--ap-muted);font-size:12px;margin-top:6px">Current ' + cg.toFixed(2) + " · " + cr + " credits</div></div></div></div>";
+      '<div style="text-align:center;align-self:center"><div style="color:var(--ap-muted);font-weight:600;font-size:13px">Projected CGPA</div><div class="pp-big pp-cgb" role="button" tabindex="0" title="Tap to show / hide CGPA" id="pp-calc-out">' + (cg ? cg.toFixed(2) : "—") + '</div><div id="pp-calc-diff" style="font-weight:700"></div><div style="color:var(--ap-muted);font-size:12px;margin-top:6px">Current ' + cgB(cg.toFixed(2)) + " · " + cr + " credits</div></div></div></div>";
   }
   function calcWire() {
     var box = $("#pp-calc", app); if (!box) return; var rows = $("#pp-calc-rows", box), cg = +box.dataset.cg, cr = +box.dataset.cr;
@@ -1297,6 +1304,45 @@
   };
 
   /* ---------- more ---------- */
+  /* ---------- What's new + update check ----------
+     Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
+     When a newer version exists, More shows the new features and a GitHub update link. */
+  var PP_VER = "3.9";
+  var PP_NEW = [
+    "CGPA is now hidden (blurred) everywhere. Tap it to show, tap again to hide.",
+    "Faculty review: cleaner sorting with By faculty, Top rated and With comments.",
+    "New \u201cWhat\u2019s new\u201d section in More. It tells you when an update is out and links to GitHub."
+  ];
+  var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
+      UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
+      US_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js",
+      UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen";
+  function verCmp(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < Math.max(a.length, b.length); i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
+  function isUS() { return typeof GM_info !== "undefined" || typeof GM_xmlhttpRequest === "function" || (typeof GM !== "undefined" && !!GM); }
+  function updNewer() { var c = jget(UPD_KEY, null), d = c && c.d; return d && d.version && verCmp(d.version, PP_VER) > 0 ? d : null; }
+  function updN() { var d = updNewer(); return d && jget(UPD_SEEN, "") !== d.version ? 1 : 0; }
+  function updGet(force) {
+    var c = jget(UPD_KEY, null);
+    if (!force && c && c.t && Date.now() - c.t < 6 * 36e5) return Promise.resolve(c.d);
+    if (!window.fetch) return Promise.resolve(c && c.d);
+    return fetch(UPD_URL + "?h=" + Math.floor(Date.now() / 36e5), { credentials: "omit", cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) { if (!d || !d.version) throw new Error("bad"); jset(UPD_KEY, { t: Date.now(), d: d }); return d; })
+      .catch(function () { return c && c.d; });
+  }
+  function updCard() {
+    var d = updNewer(), us = isUS(), notes = d ? (Array.isArray(d.notes) ? d.notes : []) : PP_NEW;
+    var link = d ? (us ? US_URL : (d.release || GH_REPO + "/releases/latest")) : GH_REPO + "/releases/latest";
+    return '<div class="pp-card pp-upd' + (d ? " pp-upd-new" : "") + '" id="pp-upd"><h3>' + ic(d ? "spark" : "check") + (d ? " Update available" + NEWDOT : " What\u2019s new") +
+      '<span class="pp-more"><span class="pp-chip">v' + esc(d ? d.version : PP_VER) + "</span></span></h3>" +
+      '<p class="pp-note" style="margin:0 0 8px">' + (d ? "AIUB Portal+ v" + esc(d.version) + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You have the latest version (v" + PP_VER + "). New in this version:") + "</p>" +
+      '<ul class="pp-updl">' + notes.slice(0, 10).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+      (d ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your Portal+ folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
+      '<div class="pp-row" style="gap:8px;flex-wrap:wrap">' + (d ? '<a class="pp-btn pri sm" href="' + esc(link) + '" target="_blank" rel="noopener">' + ic("refresh") + (us ? " Update now" : " Download update") + "</a>" : "") +
+      '<a class="pp-btn sm" href="' + GH_REPO + '/releases/latest" target="_blank" rel="noopener">' + ic("github") + " View on GitHub</a></div></div>";
+  }
+  function updPaint() { var c = $("#pp-upd", app); if (c && current === "more") c.outerHTML = updCard(); var d = updNewer(); if (d && current === "more") jset(UPD_SEEN, d.version); paintBadges(); }
+
   var GROUP_IC = { Academics: "book", "Grade Reports": "award", Library: "lib", Others: "file", Messages: "mail" };
   VIEWS.more = function (p, f) {
     setHead("More", "Everything in the portal, in one place");
@@ -1304,7 +1350,7 @@
       var fl = pr.f || {}, keys = ["Student ID", "CGPA", "Credit", "Program", "Department", "Verified Email", "Verified Contact"];
       var initials = NAME.split(" ").filter(Boolean).slice(0, 2).map(function (x) { return x[0]; }).join("");
       return '<div class="pp-view"><div class="pp-card" style="margin-bottom:16px"><div class="pp-row" style="gap:16px;margin-bottom:14px"><span class="pp-avatar" style="width:64px;height:64px;font-size:22px">' + esc(initials) + '</span><div><h2 style="font-size:22px">' + esc(NAME) + '</h2><div style="color:var(--ap-muted)">' + esc(fl["Program"] || "") + '</div></div><a class="pp-btn sm" style="margin-left:auto" href="' + classic("/Student/Home/Profile") + '">' + ic("user") + " Full profile</a></div>" +
-        '<div class="pp-grid pp-g3" style="margin:0">' + keys.filter(function (k) { return fl[k]; }).map(function (k) { return '<div class="pp-item"><div class="pp-t"><small>' + esc(k) + "</small><b" + (/Contact|Email/.test(k) ? ' class="ap-private"' : "") + ">" + esc(fl[k]) + "</b></div></div>"; }).join("") + "</div></div>" +
+        '<div class="pp-grid pp-g3" style="margin:0">' + keys.filter(function (k) { return fl[k]; }).map(function (k) { return '<div class="pp-item"><div class="pp-t"><small>' + esc(k) + "</small>" + (k === "CGPA" ? cgB(esc(fl[k]), "b") : "<b" + (/Contact|Email/.test(k) ? ' class="ap-private"' : "") + ">" + esc(fl[k]) + "</b>") + "</div></div>"; }).join("") + "</div></div>" + updCard() +
         '<a class="pp-card pp-facard" href="#/reviews" data-r="reviews"><span class="pp-qi">' + ic("star") + '</span><div class="pp-t"><b>Faculty review</b><small>Rate your faculty anonymously · see everyone’s reviews</small></div>' + ic("back", "flip") + "</a>" +
         '<a class="pp-card pp-facard" href="#/faculty"><span class="pp-qi">' + ic("user") + '</span><div class="pp-t"><b>Faculty list</b><small>Find any AIUB faculty — room, email, department, research interests</small></div>' + ic("back", "flip") + "</a>" +
         '<div class="pp-grid pp-g3">' + MENU.map(function (g) { return '<div class="pp-card"><h3>' + ic(GROUP_IC[g.g] || "grid") + " " + esc(g.g) + '</h3><div class="pp-list">' + g.items.map(function (it) { return '<a class="pp-item" style="padding:10px 12px" href="' + classic(it.h) + '"><div class="pp-t"><b style="font-size:13.5px">' + esc(it.t) + "</b></div>" + ic("back", "flip") + "</a>"; }).join("") + "</div></div>"; }).join("") +
@@ -1315,7 +1361,7 @@
         '<a class="pp-item" href="https://github.com/amitsami" target="_blank" rel="noopener">' + ic("github") + '<div class="pp-t"><small>GitHub</small><b>github.com/amitsami</b></div>' + ic("ext") + "</a></div></div>";
     });
   };
-  VIEWS.more.after = function () { var lo = $("#pp-logout", app); if (lo) lo.onclick = function () { clearCache(); try { localStorage.removeItem(MF_KEY); mf = null; } catch (e) {} try { sessionStorage.clear(); } catch (e) {} }; $$("svg.flip", app).forEach(function (s) { s.style.transform = "rotate(180deg)"; s.style.opacity = ".5"; }); };
+  VIEWS.more.after = function () { cgWire(); updPaint(); updGet().then(updPaint); var lo = $("#pp-logout", app); if (lo) lo.onclick = function () { clearCache(); try { localStorage.removeItem(MF_KEY); mf = null; } catch (e) {} try { sessionStorage.clear(); } catch (e) {} }; $$("svg.flip", app).forEach(function (s) { s.style.transform = "rotate(180deg)"; s.style.opacity = ".5"; }); };
 
   /* ---------- settings ---------- */
   VIEWS.settings = function () {

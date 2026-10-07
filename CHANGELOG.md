@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.9 - CGPA privacy, cleaner review sorting and update alerts.
+
+- CGPA is now hidden (blurred) everywhere: Grades page, CGPA trend chart, semester cards, What-if calculator, More profile and the classic portal. Tap it to show, tap again to hide. It hides again when you change page.
+- Faculty review -> All reviews: the "Latest" sort was removed. By faculty (default), Top rated and With comments remain.
+- New "What's new" section in More. It shows the new features of your version, and when a newer version is out it shows the update details with a GitHub update link (plus a red dot on More).
+
 ## 3.8.2 - Faculty review search now finds all reviews.
 
 - Searching in Faculty review -> All reviews now also searches the review server, so matching reviews are found even when there are more than 1000 reviews. Same page, same design.

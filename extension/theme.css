@@ -465,3 +465,7 @@ html.ap.ap-login #captcha .btn { width: 44px; height: 44px; border-radius: 12px 
 html.ap.ap-login #captcha label { display: block; margin: 10px 0 6px; color: var(--ap-muted); font-size: .9rem; text-align: center; }
 html.ap.ap-login #CaptchaInputText { padding-left: 16px !important; text-align: center; font-size: 1.15rem !important; font-weight: 700; letter-spacing: .1em; }
 html.ap .field-validation-error { color: #ef4444 !important; font-size: .85rem; display: block; margin-top: 6px; }
+
+/* CGPA is always blurred in the classic portal too; tap to show / hide (v3.9) */
+html.ap .ap-cg { filter: blur(6px); transition: filter .25s; cursor: pointer; }
+html.ap .ap-cg.ap-show { filter: none; }

@@ -315,3 +315,19 @@ html[data-ap-mode="light"] #pp-cmd .pp-cmd-in { background: rgba(255,255,255,.88
 #pp-cmd .pp-cmd-l a b { flex: 1; font-weight: 600; font-size: 14px; } #pp-cmd .pp-cmd-l a small { color: var(--ap-muted); font-size: 12px; }
 #pp-cmd .pp-cmd-l a.on, #pp-cmd .pp-cmd-l a:hover { background: rgba(var(--ap-accent-rgb), .14); } #pp-cmd .pp-cmd-l a.on svg { color: var(--ap-accent); }
 #pp-cmd .pp-cmd-e { padding: 22px; text-align: center; color: var(--ap-muted); }
+
+/* CGPA privacy: blurred until tapped (v3.9) */
+#pp-app .pp-cgb { filter: blur(7px); cursor: pointer; user-select: none; -webkit-user-select: none; transition: filter .2s ease; -webkit-tap-highlight-color: transparent; }
+#pp-app span.pp-cgb { display: inline-block; }
+#pp-app .pp-stat b .pp-cgb { color: inherit; font-size: inherit; }
+#pp-app .pp-stat b .pp-cgb, #pp-app .pp-big.pp-cgb { filter: blur(11px); }
+#pp-app div.pp-cgb:not(.pp-big) { filter: blur(10px); }
+#pp-app.pp-cgon .pp-cgb, #pp-app.pp-cgon div.pp-cgb:not(.pp-big), #pp-app.pp-cgon .pp-stat b .pp-cgb, #pp-app.pp-cgon .pp-big.pp-cgb { filter: none; user-select: auto; -webkit-user-select: auto; }
+#pp-app:not(.pp-cgon) .pp-cgb * { pointer-events: none; }
+#pp-app .pp-cgb:focus-visible { outline: 2px solid var(--ap-accent); outline-offset: 3px; border-radius: 6px; }
+
+/* What's new / update card (v3.9) */
+#pp-app .pp-upd { margin-bottom: 16px; }
+#pp-app .pp-upd-new { box-shadow: 0 0 0 2px rgba(var(--ap-accent-rgb), .55), var(--ap-shadow); }
+#pp-app .pp-updl { margin: 4px 0 12px; padding-left: 20px; line-height: 1.55; color: var(--ap-text); }
+#pp-app .pp-updl li { margin: 4px 0; }

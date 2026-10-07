@@ -230,7 +230,14 @@
       if (k === "password" || k === "cgpa") {
         var row = td.parentElement, cells = Array.prototype.slice.call(row.children), i = cells.indexOf(td);
         var v = cells[i + 1] && cells[i + 1].textContent.trim() === ":" ? cells[i + 2] : cells[i + 1];
-        if (v) { v.classList.add("ap-private"); v.addEventListener("click", function () { v.classList.toggle("ap-show"); }); }
+        var cls = k === "cgpa" ? "ap-cg" : "ap-private";  // CGPA is always blurred (tap to show / hide)
+        if (v && !v.classList.contains(cls)) { v.classList.add(cls); v.addEventListener("click", function () { v.classList.toggle("ap-show"); }); }
+        if (k === "cgpa" && cells.length >= 3) {  // CGPA column header: blur the numbers below it
+          var tb = row.parentElement; Array.prototype.slice.call(tb ? tb.children : []).forEach(function (r2) {
+            if (r2 === row || r2.children.length !== cells.length) return; var c2 = r2.children[i];
+            if (c2 && /^\d(\.\d+)?$/.test(c2.textContent.trim()) && !c2.classList.contains("ap-cg")) { c2.classList.add("ap-cg"); c2.addEventListener("click", function () { c2.classList.toggle("ap-show"); }); }
+          });
+        }
       }
     });
   }

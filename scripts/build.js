@@ -34,6 +34,19 @@ const header = [
   "// ==/UserScript==",
 ].join("\n");
 
+// Safety checks: the in-app version (PP_VER in shell.js) and update.json must match manifest.json.
+const ppVer = (/var PP_VER = "([^"]+)"/.exec(ext("shell.js")) || [])[1];
+if (ppVer !== manifest.version) {
+  console.error("Version mismatch: manifest.json is " + manifest.version + " but PP_VER in shell.js is " + ppVer);
+  process.exit(1);
+}
+try {
+  const upd = JSON.parse(fs.readFileSync(path.join(root, "update.json"), "utf8"));
+  if (upd.version !== manifest.version) console.warn("Warning: update.json version (" + upd.version + ") differs from manifest.json (" + manifest.version + ")");
+} catch (e) {
+  console.warn("Warning: update.json is missing or invalid");
+}
+
 const css = ["theme.css", "shell.css", "glass.css"].map(ext).join("\n");
 const style =
   '(function(){var s=document.createElement("style");s.id="ap-css";s.textContent=' +
