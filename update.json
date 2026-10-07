@@ -1,10 +1,11 @@
 {
-  "version": "3.9",
-  "date": "2026-10-06",
+  "version": "3.9.1",
+  "date": "2026-10-07",
   "notes": [
-    "CGPA is now hidden (blurred) everywhere. Tap it to show, tap again to hide.",
+    "Faculty photos in Faculty review load reliably now. If aiub.edu is slow, photos are retried automatically.",
+    "CGPA is hidden (blurred) everywhere. Tap it to show, tap again to hide.",
     "Faculty review: cleaner sorting with By faculty, Top rated and With comments.",
-    "New “What’s new” section in More. It tells you when an update is out and links to GitHub."
+    "“What’s new” section in More tells you when an update is out and links to GitHub."
   ],
   "release": "https://github.com/amitsami/aiub-portal-plus/releases/latest"
 }

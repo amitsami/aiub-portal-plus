@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AIUB Portal+ — Modern UI
 // @namespace    aiub-portal-plus
-// @version      3.9
+// @version      3.9.1
 // @description  Modern, fast app-style UI for the AIUB student portal. Only changes the design. Your portal data never leaves your browser.
 // @author       amitsami
 // @homepageURL  https://github.com/amitsami/aiub-portal-plus
@@ -1039,17 +1039,57 @@
   function facPic(e, portalImg, name, cls) {
     var x = facBy(e), src = x && x[7] ? SITE + x[7] : portalImg || "";
     var ini = String(name || "?").split(" ").filter(function (w) { return /^[A-Z]/i.test(w) && !/^(dr|md|mr|ms|mrs)\.?$/i.test(w); }).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
-    return '<span class="pp-rvpic ' + (cls || "") + '" data-i="' + esc(ini) + '" data-e="' + esc(e) + '">' + (src ? '<img loading="lazy" decoding="async" alt="" src="' + esc(src) + '" onerror="this.remove()">' : "") + "</span>";
+    picWire(); var alt = portalImg && portalImg !== src ? portalImg : "";
+    if (src && picDead[src] && Date.now() - picDead[src] < 6e5) src = alt;
+    return '<span class="pp-rvpic ' + (cls || "") + '" data-i="' + esc(ini) + '" data-e="' + esc(e) + '"' + (alt ? ' data-alt="' + esc(alt) + '"' : "") + ">" + (src ? '<img loading="lazy" decoding="async" alt="" src="' + esc(src) + '" data-src="' + esc(src) + '">' : "") + "</span>";
   }
   function starsHtml(n, big) { var s = ""; for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= Math.round(n) ? "on" : "") + '">★</i>'; return '<span class="pp-stars' + (big ? " big" : "") + '">' + s + "</span>"; }
   function agoIso(s) { var t = Date.parse(s); return !t ? "" : Date.now() - t < 60e3 ? "just now" : ago(t); }
-  function rvPics() { if (!app || !peek("faculty")) return; facIdx = null; $$(".pp-rvpic[data-e]", app).forEach(function (el) { var x = facBy(el.getAttribute("data-e")); if (!x || !x[7]) return; var im = $("img", el), src = SITE + x[7]; if (im && im.getAttribute("src") === src) return; if (!im) { im = document.createElement("img"); im.alt = ""; im.decoding = "async"; im.onerror = function () { im.remove(); }; el.appendChild(im); } im.src = src; }); }
+  /* Faculty photos come from www.aiub.edu, which is sometimes slow or busy. A failed photo is retried
+     3 times (1.5 s, 4 s, 9 s), then the portal photo or the initials are shown and it is tried again later
+     (next refresh, when the connection comes back, or after 10 minutes). The faculty list is retried too. */
+  var picDead = {};
+  function picFail(im) {
+    var el = im.parentNode, base = im.getAttribute("data-src") || im.getAttribute("src") || "", n = +(im.getAttribute("data-try") || 0);
+    if (!el || !base) return;
+    if (n < 3) { im.setAttribute("data-try", n + 1); setTimeout(function () { if (im.isConnected && im.getAttribute("data-src") === base) im.src = base + (base.indexOf("?") < 0 ? "?" : "&") + "r=" + Date.now().toString(36); }, [1500, 4000, 9000][n]); return; }
+    picDead[base] = Date.now();
+    var alt = el.getAttribute("data-alt");
+    if (alt && alt !== base && !picDead[alt]) { im.setAttribute("data-src", alt); im.setAttribute("data-try", "0"); im.src = alt; return; }
+    im.remove();
+  }
+  function picWire() {
+    if (picWire.on || !app) return; picWire.on = 1;
+    app.addEventListener("error", function (e) { var t = e.target; if (t && t.tagName === "IMG" && t.parentNode && t.parentNode.classList && t.parentNode.classList.contains("pp-rvpic")) picFail(t); }, true);
+    window.addEventListener("online", function () { picDead = {}; rvPics(); });
+  }
+  function facEnsure() {
+    if (peek("faculty")) return Promise.resolve(peek("faculty"));
+    if (facEnsure.p) return facEnsure.p;
+    var n = facEnsure.n = (facEnsure.n || 0) + 1;
+    facEnsure.p = facLoad().then(function (d) { facEnsure.p = null; facEnsure.n = 0; facIdx = null; return d; }, function (e) {
+      facEnsure.p = null; if (n < 4) setTimeout(function () { if (current === "reviews" || current === "home") facEnsure().then(rvPics, function () {}); }, [4e3, 12e3, 30e3][n - 1]); throw e; });
+    return facEnsure.p;
+  }
+  function rvPics() {
+    if (!app) return; picWire();
+    if (!peek("faculty")) { facEnsure().then(function () { rvPics(); }, function () {}); return; }
+    facIdx = null;
+    $$(".pp-rvpic[data-e]", app).forEach(function (el) {
+      var x = facBy(el.getAttribute("data-e")); if (!x || !x[7]) return; var src = SITE + x[7], im = $("img", el);
+      if (picDead[src] && Date.now() - picDead[src] < 6e5) return;
+      if (im && im.getAttribute("data-src") === src && !im.getAttribute("data-try") && im.complete && !im.naturalWidth) { picFail(im); return; }  // failed before we were listening
+      if (im && (im.getAttribute("data-src") === src || im.getAttribute("data-try"))) return;
+      if (!im) { im = document.createElement("img"); im.alt = ""; im.decoding = "async"; el.appendChild(im); }
+      delete picDead[src]; im.removeAttribute("data-try"); im.setAttribute("data-src", src); im.src = src;
+    });
+  }
 
   var rvState = { tab: "give", q: "", sort: "faculty", show: 30 };
   VIEWS.reviews = function (p) {
     if (p.tab) rvState.tab = p.tab;
     setHead("Reviews", "Faculty review · anonymous", '<button class="pp-btn sm" data-rv="reload">' + ic("refresh") + " Refresh</button>");
-    if (!peek("faculty")) facLoad().then(function () { facIdx = null; if (current === "reviews") rvPics(); }, function () {});
+    if (!peek("faculty")) facEnsure().then(function () { if (current === "reviews") rvPics(); }, function () {});
     var srv = rvCfg();
     return '<div class="pp-view pp-rv">' +
       (srv ? "" : '<div class="pp-card pp-rvwarn">⚠️ <b>Review server not connected.</b> Reviews can’t be shared yet. If you are the developer, add the server in <a href="#/settings">Settings → Faculty review server</a>.</div>') +
@@ -1594,11 +1634,12 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9";
+  var PP_VER = "3.9.1";
   var PP_NEW = [
-    "CGPA is now hidden (blurred) everywhere. Tap it to show, tap again to hide.",
+    "Faculty photos in Faculty review load reliably now. If aiub.edu is slow, photos are retried automatically.",
+    "CGPA is hidden (blurred) everywhere. Tap it to show, tap again to hide.",
     "Faculty review: cleaner sorting with By faculty, Top rated and With comments.",
-    "New \u201cWhat\u2019s new\u201d section in More. It tells you when an update is out and links to GitHub."
+    "\u201cWhat\u2019s new\u201d section in More tells you when an update is out and links to GitHub."
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",

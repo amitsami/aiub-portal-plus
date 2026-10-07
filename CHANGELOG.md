@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.1 - Faculty photos load reliably.
+
+- Faculty review: when www.aiub.edu is slow or busy, faculty photos are retried automatically (3 times), then the portal photo or initials are shown and tried again later (on refresh, when the connection comes back, or after 10 minutes). No more broken photo boxes.
+- The faculty list (used for photos) is also retried automatically if aiub.edu does not respond.
+
 ## 3.9 - CGPA privacy, cleaner review sorting and update alerts.
 
 - CGPA is now hidden (blurred) everywhere: Grades page, CGPA trend chart, semester cards, What-if calculator, More profile and the classic portal. Tap it to show, tap again to hide. It hides again when you change page.
