@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.3 - See all comments for a faculty
+- Faculty review → All reviews: each faculty card now has a 💬 dropdown next to the name that shows all comments for that faculty
+- The list now shows how many faculty have been reviewed (for example "52 faculty reviewed · 140 reviews")
+
 ## 3.9.2 - Update notice, Give review and Registration fixes.
 
 - When a new version is out, Home and More show "Update available" with the new features and a GitHub update link.

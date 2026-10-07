@@ -370,6 +370,14 @@ html.ap .login-form { animation: none !important; }
 #pp-app .pp-rvrep { position: absolute; top: 8px; right: 8px; background: none; border: 0; color: var(--ap-muted); font-size: 14px; opacity: .55; cursor: pointer; padding: 6px; }
 #pp-app .pp-rvf { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; font: inherit; color: inherit; border: 0; cursor: pointer; padding: 13px 14px; margin-bottom: 10px; }
 #pp-app .pp-rvf .pp-t, #pp-app .pp-rvsum .pp-t { flex: 1; min-width: 0; }
+#pp-app .pp-rvcount { font-size: 13px; color: var(--ap-muted); margin: 0 2px 10px; } #pp-app .pp-rvcount b { color: var(--ap-text); font-size: 14px; }
+#pp-app .pp-rvfw { padding: 0; margin-bottom: 10px; overflow: hidden; }
+#pp-app .pp-rvfrow { display: flex; align-items: center; } #pp-app .pp-rvfw .pp-rvf { flex: 1; min-width: 0; margin: 0; background: none; box-shadow: none; padding-right: 6px; }
+#pp-app .pp-rvdd { display: inline-flex; align-items: center; gap: 3px; flex: none; margin-right: 12px; padding: 6px 9px; border: 1px solid rgba(127,127,127,.28); border-radius: 999px; background: none; color: inherit; font: inherit; font-size: 12.5px; cursor: pointer; }
+#pp-app .pp-rvdd svg.i { width: 15px; height: 15px; transition: transform .2s; } #pp-app .pp-rvfw.open .pp-rvdd svg.i { transform: rotate(180deg); }
+#pp-app .pp-rvcms { border-top: 1px solid var(--ap-hair); padding: 4px 14px 10px; max-height: 420px; overflow-y: auto; }
+#pp-app .pp-rvc { padding: 9px 0; border-bottom: 1px solid var(--ap-hair); } #pp-app .pp-rvc:last-child { border-bottom: 0; }
+#pp-app .pp-rvc .pp-rvcm { margin: 0 0 4px; } #pp-app .pp-rvc small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--ap-muted); font-size: 11.5px; } #pp-app .pp-rvc0 { color: var(--ap-muted); font-size: 13px; }
 #pp-app .pp-rvavg { display: flex; align-items: center; gap: 6px; margin-top: 5px; } #pp-app .pp-rvavg b { font-size: 14px; } #pp-app .pp-rvavg small { color: var(--ap-muted); font-size: 12px; }
 #pp-app .pp-rvsum { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; padding: 14px; }
 #pp-app .pp-rvsem > summary { list-style: none; cursor: pointer; -webkit-tap-highlight-color: transparent; } #pp-app .pp-rvsem > summary::-webkit-details-marker { display: none; }

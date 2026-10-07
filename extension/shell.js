@@ -49,7 +49,7 @@
     moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     check: '<path d="M20 6 9 17l-5-5"/>', alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
-    plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', back: '<path d="m15 18-6-6 6-6"/>', lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', back: '<path d="m15 18-6-6 6-6"/>', down: '<path d="m6 9 6 6 6-6"/>', lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     lib: '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>', file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
     megaphone: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
     key: '<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 9.2-9.2"/><path d="m17 6 3 3"/><path d="m14.5 8.5 2 2"/>',
@@ -802,7 +802,7 @@
     });
   }
 
-  var rvState = { tab: "give", q: "", sort: "faculty", show: 30 };
+  var rvState = { tab: "give", q: "", sort: "faculty", show: 30, open: {} };
   VIEWS.reviews = function (p) {
     if (p.tab) rvState.tab = p.tab;
     setHead("Reviews", "Faculty review · anonymous", '<button class="pp-btn sm" data-rv="reload">' + ic("refresh") + " Refresh</button>");
@@ -922,8 +922,14 @@
     var html = "";
     if (rvState.sort === "faculty" || rvState.sort === "top") {
       var ag = facAgg(list); ag.sort(rvState.sort === "top" ? function (a, b) { return (b.avg * b.cnt / (b.cnt + 2) + 3 * 2 / (b.cnt + 2)) - (a.avg * a.cnt / (a.cnt + 2) + 3 * 2 / (a.cnt + 2)) || b.cnt - a.cnt; } : function (a, b) { return a.n.localeCompare(b.n); });
-      html = ag.slice(0, rvState.show).map(function (a) { var x = facBy(a.e);
-        return '<button class="pp-card pp-rvf" data-fq="' + esc(a.n) + '">' + facPic(a.e, "", a.n) + '<div class="pp-t"><b>' + esc(a.n) + "</b><small>" + esc(x ? title(x[4].toLowerCase()) + " · " + title(x[3].toLowerCase()) : Object.keys(a.courses).slice(0, 2).join(" · ")) + '</small><div class="pp-rvavg">' + starsHtml(a.avg) + "<b>" + a.avg.toFixed(1) + "</b><small>" + a.cnt + (a.cnt > 1 ? " reviews" : " review") + (a.cm ? " · " + a.cm + " 💬" : "") + "</small></div></div></button>"; }).join("");
+      /* every review of each faculty (not only the ones matching the search) feeds the comments dropdown */
+      var byF = {}; base.forEach(function (r) { if (r.comment) (byF[r.fac_email] || (byF[r.fac_email] = [])).push(r); });
+      var nRv = 0; ag.forEach(function (a) { nRv += a.cnt; });
+      html = (ag.length ? '<div class="pp-rvcount"><b>' + ag.length + "</b> " + "faculty" + (qs.length ? " found" : " reviewed") + " · " + nRv + (nRv > 1 ? " reviews" : " review") + "</div>" : "") +
+        ag.slice(0, rvState.show).map(function (a) { var x = facBy(a.e), cms = (byF[a.e] || []).slice().sort(function (p, q) { return String(q.updated_at || q.created_at || "").localeCompare(String(p.updated_at || p.created_at || "")); }), op = !!rvState.open[a.e];
+        return '<div class="pp-card pp-rvfw' + (op ? " open" : "") + '"><div class="pp-rvfrow"><button class="pp-rvf" data-fq="' + esc(a.n) + '">' + facPic(a.e, "", a.n) + '<div class="pp-t"><b>' + esc(a.n) + "</b><small>" + esc(x ? title(x[4].toLowerCase()) + " · " + title(x[3].toLowerCase()) : Object.keys(a.courses).slice(0, 2).join(" · ")) + '</small><div class="pp-rvavg">' + starsHtml(a.avg) + "<b>" + a.avg.toFixed(1) + "</b><small>" + a.cnt + (a.cnt > 1 ? " reviews" : " review") + (a.cm ? " · " + a.cm + " 💬" : "") + "</small></div></div></button>" +
+          '<button class="pp-rvdd" data-dd="' + esc(a.e) + '" aria-expanded="' + op + '" title="' + (op ? "Hide comments" : "Show all comments") + '" aria-label="Comments">💬 ' + cms.length + ic("down") + "</button></div>" +
+          (op ? '<div class="pp-rvcms">' + (cms.length ? cms.map(function (r) { return '<div class="pp-rvc"><p class="pp-rvcm">' + esc(r.comment) + "</p><small>" + starsHtml(r.stars) + " " + esc(r.course) + " · " + esc(r.semester) + " · " + esc(agoIso(r.updated_at || r.created_at)) + "</small></div>"; }).join("") : '<div class="pp-rvc pp-rvc0">No written comments yet — only star ratings.</div>') + "</div>" : "") + "</div>"; }).join("");
       var more = ag.length - rvState.show;
     } else {
       var one = qs.length ? facAgg(list) : []; var head = one.length === 1 ? '<div class="pp-card pp-rvsum">' + facPic(one[0].e, "", one[0].n, "lg") + '<div class="pp-t"><b>' + esc(one[0].n) + '</b><div class="pp-rvavg">' + starsHtml(one[0].avg, 1) + "<b>" + one[0].avg.toFixed(1) + "</b><small>" + one[0].cnt + (one[0].cnt > 1 ? " reviews" : " review") + "</small></div></div></div>" : "";
@@ -935,6 +941,7 @@
     box.innerHTML = (html || '<div class="pp-card pp-empty"><span class="pp-em">⭐</span>' + (rvAll.length ? "No reviews match your search" : "No reviews yet — be the first! Go to “Give review”.") + "</div>") +
       (more > 0 ? '<div style="text-align:center;margin-top:14px"><button class="pp-btn" id="pp-rvmore">Show more (' + more + ")</button></div>" : "");
     var mb = $("#pp-rvmore", box); if (mb) mb.onclick = function () { rvState.show += 30; listDraw(); }; rvPics();
+    $$("[data-dd]", box).forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var e = b.getAttribute("data-dd"); if (rvState.open[e]) delete rvState.open[e]; else rvState.open[e] = 1; listDraw(); }; });
     $$("[data-fq]", box).forEach(function (b) { b.onclick = function () { rvState.q = b.getAttribute("data-fq"); rvState.sort = "latest"; rvState.show = 30; allDraw($("#pp-rvbody", app)); scTop(0); }; });
     $$("[data-rep]", box).forEach(function (b) { b.onclick = function () { if (!confirm("Report this review as abusive or fake? Reviews with several reports are hidden.")) return; var id = +b.getAttribute("data-rep");
       rvReq("rpc/report_review", "POST", { p_id: id }).then(function () { var r = jget(RV_REP, {}); r[id] = 1; jset(RV_REP, r); b.remove(); toast("Reported. Thanks!"); }, function (e) { toast(e.message); }); }; });
@@ -1351,12 +1358,10 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9.2";
+  var PP_VER = "3.9.3";
   var PP_NEW = [
-    "When a new version is out, Home and More show \"Update available\" with the new features and a GitHub update link.",
-    "After you update, More shows your version, \"Up to date\" and what's new.",
-    "Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).",
-    "Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal."
+    "Faculty review \u2192 All reviews: each faculty card now has a \ud83d\udcac dropdown next to the name that shows all comments for that faculty",
+    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed \u00b7 140 reviews\")"
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",

@@ -1,12 +1,10 @@
 {
-  "version": "3.9.2",
+  "version": "3.9.3",
   "date": "2026-10-07",
-  "title": "Update notice, Give review and Registration fixes.",
+  "title": "See all comments for a faculty",
   "notes": [
-    "When a new version is out, Home and More show \"Update available\" with the new features and a GitHub update link.",
-    "After you update, More shows your version, \"Up to date\" and what's new.",
-    "Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).",
-    "Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal."
+    "Faculty review → All reviews: each faculty card now has a 💬 dropdown next to the name that shows all comments for that faculty",
+    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed · 140 reviews\")"
   ],
   "release": "https://github.com/amitsami/aiub-portal-plus/releases/latest"
 }
