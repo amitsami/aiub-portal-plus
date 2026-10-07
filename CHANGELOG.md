@@ -1,8 +1,12 @@
 # Changelog
 
-## 3.9.3 - See all comments for a faculty
+## 3.9.3 - Faculty comments, faster Give review, live Customize
 - Faculty review → All reviews: each faculty card now has a 💬 dropdown next to the name that shows all comments for that faculty
 - The list now shows how many faculty have been reviewed (for example "52 faculty reviewed · 140 reviews")
+- The "With comments" tab was removed (comments are now in each faculty's dropdown)
+- Give review: reviews you gave in earlier semesters show as reviewed again, even if a course name is written a little differently
+- Give review is faster: closed semesters load when opened, fewer redraws while loading, and failed faculty pages are retried
+- Settings → Customize: Glass blur, Roundness and Text size now change live while you move the slider, with a live preview and value labels
 
 ## 3.9.2 - Update notice, Give review and Registration fixes.
 

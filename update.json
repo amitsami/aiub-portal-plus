@@ -1,10 +1,14 @@
 {
   "version": "3.9.3",
   "date": "2026-10-07",
-  "title": "See all comments for a faculty",
+  "title": "Faculty comments, faster Give review, live Customize",
   "notes": [
     "Faculty review → All reviews: each faculty card now has a 💬 dropdown next to the name that shows all comments for that faculty",
-    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed · 140 reviews\")"
+    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed · 140 reviews\")",
+    "The \"With comments\" tab was removed (comments are now in each faculty's dropdown)",
+    "Give review: reviews you gave in earlier semesters show as reviewed again, even if a course name is written a little differently",
+    "Give review is faster: closed semesters load when opened, fewer redraws while loading, and failed faculty pages are retried",
+    "Settings → Customize: Glass blur, Roundness and Text size now change live while you move the slider, with a live preview and value labels"
   ],
   "release": "https://github.com/amitsami/aiub-portal-plus/releases/latest"
 }

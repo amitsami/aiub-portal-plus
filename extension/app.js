@@ -81,7 +81,10 @@
       return '<button type="button" data-v="' + o[0] + '" class="' + (String(S[name]) === String(o[0]) ? "on" : "") + '">' + o[1] + "</button>"; }).join("") + "</div>";
   }
   function toggle(name, label) { return '<div class="ap-row"><span>' + label + '</span><label class="ap-tg"><input type="checkbox" data-k="' + name + '"' + (S[name] ? " checked" : "") + "><i></i></label></div>"; }
-  function range(name, label, min, max, step) { return '<div class="ap-row"><span>' + label + '</span><input type="range" data-k="' + name + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + S[name] + '"></div>'; }
+  function rangeVal(name) { var v = S[name]; return name === "scale" ? v + "%" : name === "blur" ? (v ? v + "px" : "Off") : v + "px"; }
+  function range(name, label, min, max, step) { return '<div class="ap-row"><span>' + label + '</span><span class="ap-rg"><input type="range" data-k="' + name + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + S[name] + '" aria-label="' + label + '"><output data-o="' + name + '">' + rangeVal(name) + "</output></span></div>"; }
+  /* live preview: shows Glass blur, Roundness and Text size the moment a slider moves */
+  function preview() { return '<div class="ap-pv" aria-hidden="true"><i></i><i></i><i></i><span class="ap-pv-bgt">AIUB Portal+</span><div class="ap-pv-glass"><b>Live preview</b><small>Glass blur · Roundness · Text size</small><span class="ap-pv-chip">A</span></div></div>'; }
 
   function renderPanel(p) {
     p.innerHTML =
@@ -92,7 +95,7 @@
         '<label title="Custom color"><input type="color" value="' + S.accent + '"></label></div>' +
       "<div class='ap-sec'>Background</div>" + seg("bg", [["aurora", "🌌 Aurora"], ["mesh", "🎨 Mesh"], ["solid", "⬜ Solid"]]) +
       "<div class='ap-sec'>Layout</div>" + toggle("app", "✨ Portal+ App layout") +
-      "<div class='ap-sec'>Customize</div>" +
+      "<div class='ap-sec'>Customize</div>" + preview() +
         range("blur", "Glass blur", 0, 40, 1) + range("radius", "Roundness", 4, 28, 1) + range("scale", "Text size", 85, 125, 5) +
         toggle("anim", "Animations") + toggle("trans", "Page transitions") + toggle("compact", "Compact tables") + toggle("grades", "Colorful grade badges") + toggle("privacy", "Privacy blur (password/CGPA)") +
       "<button type='button' class='ap-reset'>↺ Reset to default</button>" +
@@ -105,7 +108,13 @@
     var cp = p.querySelector("input[type=color]");
     cp.addEventListener("input", function () { S.accent = cp.value; save(); apply(); });
     cp.addEventListener("change", function () { renderPanel(p); });
-    p.querySelectorAll("input[type=range]").forEach(function (r) { r.addEventListener("input", function () { S[r.dataset.k] = +r.value; save(); apply(); }); });
+    p.querySelectorAll("input[type=range]").forEach(function (r) {
+      var o = p.querySelector('output[data-o="' + r.dataset.k + '"]'), raf = 0;
+      r.addEventListener("input", function () { S[r.dataset.k] = +r.value; if (o) o.textContent = rangeVal(r.dataset.k);
+        if (!raf) raf = requestAnimationFrame(function () { raf = 0; apply(); });   // apply at most once per frame = smooth while dragging
+      });
+      r.addEventListener("change", function () { save(); apply(); });
+    });
     p.querySelectorAll("input[type=checkbox]").forEach(function (c) { c.addEventListener("change", function () { S[c.dataset.k] = c.checked; save(); apply(); if (c.dataset.k === "grades") gradeChips(); if (c.dataset.k === "app") setTimeout(function () { location.reload(); }, 250); }); });
     p.querySelector(".ap-reset").addEventListener("click", function () { S = Object.assign({}, DEF); save(); apply(); renderPanel(p); });
   }

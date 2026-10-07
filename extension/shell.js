@@ -676,7 +676,7 @@
     });
   }
   function rvKey(x) { return x.e + "|" + norm(x.course) + "|" + x.sem; }
-  function ridFor(x) { return myId().then(function (id) { return sha256("aiubplus|review|v1|" + id + "|" + rvKey(x)); }); }
+  function ridFor(x, key) { return myId().then(function (id) { return sha256("aiubplus|review|v1|" + id + "|" + (key || rvKey(x))); }); }
 
   /* --- your faculty, semester by semester (from the portal) --- */
   var MF_KEY = "pp.mf";
@@ -722,9 +722,14 @@
     mfBusy = D.reg().then(function (reg) {
       var sems = (reg.semesters || []).map(function (s) { var q = (/[?&]q=([^&#]+)/.exec(s.u || "") || [])[1]; return q ? { t: s.t, q: q } : null; }).filter(Boolean).reverse();
       if (!sems.length) throw new Error("Couldn’t find your semesters");
-      var out = { v: 2, t: Date.now(), sems: [] }, i = 0, cur = reg.semester;
+      var out = { v: 2, t: Date.now(), sems: [] }, i = 0, cur = reg.semester, fails = [];
+      function retry() {   // section pages that failed (portal busy) get one more try, a bit slower
+        if (!fails.length) return out; var f = fails.shift();
+        return wait(700).then(function () { return getDoc(f.c.href); }).then(function (sd) { var t = parseSection(sd); if (t.length) { f.c.t = t; f.s.done = f.s.courses.every(function (c) { return c.t && c.t.length; }); } }, function (e) { if (e && e.message === "SESSION") throw e; })
+          .then(function () { if (prog) prog(mfProg, out); return retry(); });
+      }
       function step() {
-        if (i >= sems.length) return out;
+        if (i >= sems.length) return retry();
         var s = sems[i++]; mfProg = "Semester " + i + " of " + sems.length + " · " + s.t; mfTell(); if (prog) prog(mfProg, out);
         var past = old && old.sems.filter(function (x) { return x.t === s.t && x.done; })[0];
         if (past && s.t !== cur) { out.sems.push(past); return step(); }
@@ -735,7 +740,7 @@
           return (function nextC() {
             if (j >= cs.length) return step();
             var c = cs[j++]; if (secCache[c.href]) { c.t = secCache[c.href]; return nextC(); }
-            return wait(120).then(function () { return getDoc(c.href); }).then(function (sd) { c.t = parseSection(sd); if (!c.t.length) sem.done = false; }, function (e) { if (e && e.message === "SESSION") throw e; c.t = []; sem.done = false; })
+            return wait(120).then(function () { return getDoc(c.href); }).then(function (sd) { c.t = parseSection(sd); if (!c.t.length) { sem.done = false; fails.push({ c: c, s: sem }); } }, function (e) { if (e && e.message === "SESSION") throw e; c.t = []; sem.done = false; fails.push({ c: c, s: sem }); })
               .then(function () { if (prog) prog(mfProg, out); return nextC(); });
           })();
         }, function (e) { if (e && e.message === "SESSION") throw e; if (oldSem[s.t]) out.sems.push(oldSem[s.t]); return step(); });
@@ -802,9 +807,10 @@
     });
   }
 
-  var rvState = { tab: "give", q: "", sort: "faculty", show: 30, open: {} };
+  var rvState = { tab: "give", q: "", sort: "faculty", show: 30, open: {}, fopen: {} };
   VIEWS.reviews = function (p) {
     if (p.tab) rvState.tab = p.tab;
+    if (rvState.sort !== "faculty" && rvState.sort !== "top") rvState.sort = "faculty";
     setHead("Reviews", "Faculty review · anonymous", '<button class="pp-btn sm" data-rv="reload">' + ic("refresh") + " Refresh</button>");
     if (!peek("faculty")) facEnsure().then(function () { if (current === "reviews") rvPics(); }, function () {});
     var srv = rvCfg();
@@ -818,64 +824,124 @@
   function rvPaint(force) { if (current !== "reviews") return; var b = $("#pp-rvbody", app); if (!b) return; if (rvState.tab === "give" && rvDirty && force !== true) return; rvDirty = false; if (rvState.tab === "give") giveDraw(b); else allDraw(b); var n = $("#pp-rvn", app); if (n && rvAll) n.textContent = rvAll.length; }
   VIEWS.reviews.after = function () {
     $$("[data-rt]", app).forEach(function (b) { b.onclick = function () { rvState.tab = b.getAttribute("data-rt"); $$("[data-rt]", app).forEach(function (x) { x.classList.toggle("on", x === b); }); rvPaint(true); }; });
-    var rl = $('[data-rv="reload"]', app); if (rl) rl.onclick = function () { rl.disabled = true; Promise.all([rvList(true).catch(function () {}), rvState.tab === "give" ? mfLoad(true, function () { rvPaint(); }).catch(function () {}) : null]).then(function () { rl.disabled = false; rvPaint(true); toast("Updated ✓"); }); };
+    var rl = $('[data-rv="reload"]', app); if (rl) rl.onclick = function () { rl.disabled = true; Promise.all([rvList(true).catch(function () {}), rvState.tab === "give" ? mfLoad(true, givePaintSoon).catch(function () {}) : null]).then(function () { rl.disabled = false; rvPaint(true); toast("Updated ✓"); }); };
     rvPaint();
     rvList().then(rvPaint, function (e) { if (rvState.tab === "all") rvPaint(); });
     clearInterval(rvPoll);
     rvPoll = setInterval(function () { if (current !== "reviews") { clearInterval(rvPoll); return; } if (document.hidden || !rvCfg()) return;
       whenIdle(function () { if (current !== "reviews") return; var n0 = rvAll ? rvAll.length + "|" + (rvAll[0] || {}).updated_at : ""; rvList(true).then(function (l) { var n1 = l.length + "|" + (l[0] || {}).updated_at; if (n1 !== n0) { if (rvState.tab === "all") { if (!(document.activeElement && document.activeElement.id === "pp-rvq")) listDraw(); } var nn = $("#pp-rvn", app); if (nn) nn.textContent = l.length; } }, function () {}); }, 800, 4000); }, 20000);
   };
-  /* part 1: give review */
-  function myMap() { var o = jget(RV_MINE, null); return o && o.o === NAME && o.m ? o.m : {}; }
-  function mySave(m) { jset(RV_MINE, { o: NAME, m: m }); }
+  /* part 1: give review
+     Your own reviews are remembered on this device (the server never links a review to you). They are stored
+     per student and matched again even if a course or faculty name is written a little differently later. */
+  function myAll() {
+    var o = jget(RV_MINE, null) || {};
+    if (o.m && !o.by) { var b = {}; b[o.o || "?"] = o.m; o = { v: 2, by: b }; }   // old format (one student)
+    if (!o.by) o = { v: 2, by: {} };
+    return o;
+  }
+  function myOwner(o) {
+    var k = NAME && NAME !== "Student" ? NAME : "", ks = Object.keys(o.by);
+    if (k) { if (o.by[k]) return k; var nk = norm(k); for (var x = 0; x < ks.length; x++) if (norm(ks[x]) === nk) return ks[x]; return k; }
+    return ks.length === 1 ? ks[0] : "?";   // name not readable on this page: use the only saved student
+  }
+  function myMap() { var o = myAll(); return o.by[myOwner(o)] || {}; }
+  function mySave(m) {
+    var o = myAll(), k = myOwner(o), real = NAME && NAME !== "Student" ? NAME : "";
+    if (real && k !== real) { delete o.by[k]; k = real; }   // keep the current spelling of the name
+    if (o.by["?"] && k !== "?") { Object.keys(o.by["?"]).forEach(function (x) { if (!m[x]) m[x] = o.by["?"][x]; }); delete o.by["?"]; }
+    o.by[k] = m; jset(RV_MINE, o);
+  }
+  function looseC(c) { return norm(c).replace(/AND/g, ""); }
+  /* find your saved review for this faculty + course + semester (exact key first, then a tolerant match) */
+  function mineFind(mine, idx, x) {
+    var k = rvKey(x); if (mine[k]) return k;
+    var cand = (idx[x.e + "|" + norm(x.sem)] || []).concat(idx["name:" + norm(x.n).toLowerCase() + "|" + norm(x.sem)] || []), lc = looseC(x.course);
+    for (var i = 0; i < cand.length; i++) { var c = looseC(cand[i].split("|")[1]); if (c === lc || (c.length > 5 && lc.indexOf(c) >= 0) || (lc.length > 5 && c.indexOf(lc) >= 0)) return cand[i]; }
+    return "";
+  }
+  function mineIdx(mine) { var idx = {}; Object.keys(mine).forEach(function (k) { var p = k.split("|"); (idx[p[0] + "|" + norm(p[2])] || (idx[p[0] + "|" + norm(p[2])] = [])).push(k); }); return idx; }
+  var giveTm = 0, giveAt = 0;
+  function givePaintSoon() {   // while the faculty list is loading: repaint at most every 0.8 s
+    if (giveTm) return; var w = Math.max(0, 800 - (Date.now() - giveAt));
+    giveTm = setTimeout(function () { giveTm = 0; giveAt = Date.now(); rvPaint(); }, w);
+  }
+  function giveRows(d, mine) {
+    var idx = mineIdx(mine), moved = false, out = [];
+    d.sems.forEach(function (s, si) {
+      var rows = [], miss = 0;
+      s.courses.forEach(function (c) { if (!(c.t || []).length) miss++; (c.t || []).forEach(function (t) {
+        var x = { e: t.e, n: t.n, img: t.img, course: title(c.name), sec: c.sec, res: c.res, sem: s.t }, k = rvKey(x), f = mineFind(mine, idx, x);
+        if (f && f !== k) { mine[k] = Object.assign({}, mine[f], { rk: mine[f].rk || f }); delete mine[f]; moved = true; }   // heal an old key (rk = key the server knows it by)
+        x.k = k; rows.push(x); }); });
+      out.push({ t: s.t, rows: rows, miss: miss, n: s.courses.length, done: rows.filter(function (r) { return mine[r.k]; }).length });
+    });
+    if (moved) mySave(mine);
+    return out;
+  }
+  function giveCard(x, m) {
+    return '<div class="pp-card pp-rvc" data-k="' + esc(x.k) + '">' +
+      '<div class="pp-rvhead">' + facPic(x.e, x.img, x.n) + '<div class="pp-t"><b>' + esc(x.n) + "</b><small>" + esc(x.course) + (x.sec ? " [" + esc(x.sec) + "]" : "") + (x.res && /[A-F]/.test(x.res) ? " · " + esc(x.res.replace(/\s*\(.*$/, "")) : " · Running") + "</small></div>" + (m ? '<span class="pp-chip ok">✓ Reviewed</span>' : "") + "</div>" +
+      '<div class="pp-rvform' + (m ? "" : " open") + '"><div class="pp-starpick" role="radiogroup" aria-label="Rating">' + [1, 2, 3, 4, 5].map(function (i) { return '<button type="button" data-s="' + i + '" class="' + (m && i <= m.s ? "on" : "") + '" aria-label="' + i + ' star">★</button>'; }).join("") + '<span class="pp-slab">' + (m ? ["", "Poor", "Fair", "Good", "Very good", "Excellent"][m.s] : "Tap to rate") + "</span></div>" +
+      '<textarea class="pp-input" maxlength="500" rows="2" placeholder="Comment (optional) — teaching, grading, behaviour…">' + esc(m ? m.c || "" : "") + '</textarea><div class="pp-row pp-rvact"><small class="pp-rvlen"></small>' + (m ? '<button class="pp-btn sm" data-del="1">Remove</button>' : "") + '<button class="pp-btn pri sm" data-sub="1">' + (m ? "Update review" : "Submit") + "</button></div></div>" +
+      (m ? '<div class="pp-rvmine">' + starsHtml(m.s) + (m.c ? "<p>" + esc(m.c) + "</p>" : "") + '<button class="pp-btn sm" data-edit="1">Edit</button></div>' : "") + "</div>";
+  }
+  function semBody(g, mine) {
+    return g.rows.map(function (x) { return giveCard(x, mine[x.k]); }).join("") +
+      (g.miss ? '<p class="pp-note pp-rvmiss">⚠️ Couldn’t load the faculty of ' + g.miss + (g.miss > 1 ? " courses" : " course") + ' in this semester. <button class="pp-btn sm" data-rv="retry">Try again</button></p>' : "");
+  }
   function giveDraw(box) {
     var d = mfGet();
     if (!d || mfBusy) {
-      var pm = mfBusy || mfLoad(false); if (!pm.__w) pm.__w = 1, pm.then(function () { rvPaint(); }, function (e) { var b = $("#pp-rvbody", app); if (b && rvState.tab === "give") b.innerHTML = '<div class="pp-card pp-empty"><span class="pp-em">😕</span>' + esc(e.message === "SESSION" ? "Session expired — please log in again" : e.message) + "</div>"; });
+      var pm = mfBusy || mfLoad(false, givePaintSoon); if (!pm.__w) pm.__w = 1, pm.then(function () { rvPaint(); }, function (e) { var b = $("#pp-rvbody", app); if (b && rvState.tab === "give") b.innerHTML = '<div class="pp-card pp-empty"><span class="pp-em">😕</span>' + esc(e.message === "SESSION" ? "Session expired — please log in again" : e.message) + "</div>"; });
       if (!d) { box.innerHTML = '<div class="pp-card"><div class="pp-rvload"><span class="pp-spin"></span><div><b>Finding your faculty…</b><small id="pp-mfprog">' + esc(mfProg || "Reading your semesters from the portal") + "</small></div></div></div>" + '<div class="pp-sk" style="height:110px;margin-top:12px"></div><div class="pp-sk" style="height:110px;margin-top:12px"></div>'; return; }
     }
-    if (!mfBusy && Date.now() - d.t > 12 * 3600e3) mfLoad(false).then(function () { rvPaint(); }, function () {});
-    var mine = myMap(), cnt = 0;
-    var semN = 0;
-    var html = d.sems.map(function (s) {
-      var rows = []; s.courses.forEach(function (c) { (c.t || []).forEach(function (t) { rows.push({ c: c, t: t }); }); });
-      if (!rows.length) return "";
-      var done = rows.filter(function (r) { return mine[rvKey({ e: r.t.e, course: title(r.c.name), sem: s.t })]; }).length, open = semN++ < 1 || (rvState.open || {})[s.t];
-      return '<details class="pp-rvsem" data-sem="' + esc(s.t) + '"' + (open ? " open" : "") + '><summary class="pp-sem-h">' + esc(s.t) + ' <span class="pp-chip' + (done === rows.length ? " ok" : "") + '">' + done + "/" + rows.length + "</span></summary>" + rows.map(function (r) {
-        var x = { e: r.t.e, n: r.t.n, course: title(r.c.name), sec: r.c.sec, sem: s.t }, k = rvKey(x), m = mine[k]; cnt++;
-        return '<div class="pp-card pp-rvc" data-k="' + esc(k) + '">' +
-          '<div class="pp-rvhead">' + facPic(x.e, r.t.img, x.n) + '<div class="pp-t"><b>' + esc(x.n) + "</b><small>" + esc(x.course) + (x.sec ? " [" + esc(x.sec) + "]" : "") + (r.c.res && /[A-F]/.test(r.c.res) ? " · " + esc(r.c.res.replace(/\s*\(.*$/, "")) : " · Running") + "</small></div>" + (m ? '<span class="pp-chip ok">✓ Reviewed</span>' : "") + "</div>" +
-          '<div class="pp-rvform' + (m ? "" : " open") + '"><div class="pp-starpick" role="radiogroup" aria-label="Rating">' + [1, 2, 3, 4, 5].map(function (i) { return '<button type="button" data-s="' + i + '" class="' + (m && i <= m.s ? "on" : "") + '" aria-label="' + i + ' star">★</button>'; }).join("") + '<span class="pp-slab">' + (m ? ["", "Poor", "Fair", "Good", "Very good", "Excellent"][m.s] : "Tap to rate") + "</span></div>" +
-          '<textarea class="pp-input" maxlength="500" rows="2" placeholder="Comment (optional) — teaching, grading, behaviour…">' + esc(m ? m.c || "" : "") + '</textarea><div class="pp-row pp-rvact"><small class="pp-rvlen"></small>' + (m ? '<button class="pp-btn sm" data-del="1">Remove</button>' : "") + '<button class="pp-btn pri sm" data-sub="1">' + (m ? "Update review" : "Submit") + "</button></div></div>" +
-          (m ? '<div class="pp-rvmine">' + starsHtml(m.s) + (m.c ? '<p>' + esc(m.c) + "</p>" : "") + '<button class="pp-btn sm" data-edit="1">Edit</button></div>' : "") + "</div>";
-      }).join("") + "</details>";
+    if (!mfBusy && Date.now() - d.t > 12 * 3600e3) mfLoad(false, givePaintSoon).then(function () { rvPaint(); }, function () {});
+    var mine = myMap(), groups = giveRows(d, mine), byK = {}, tot = 0, dn = 0, first = true, so = rvState.semOpen || (rvState.semOpen = {});
+    groups.forEach(function (g) { g.rows.forEach(function (x) { byK[x.k] = x; }); tot += g.rows.length; dn += g.done; }); box.__byK = byK;
+    var html = groups.map(function (g) {
+      if (!g.rows.length && !g.miss) return "";
+      var open = g.t in so ? so[g.t] : first; first = false;
+      return '<details class="pp-rvsem" data-sem="' + esc(g.t) + '"' + (open ? " open" : "") + '><summary class="pp-sem-h">' + esc(g.t) + ' <span class="pp-chip' + (g.rows.length && g.done === g.rows.length ? " ok" : "") + '">' + g.done + "/" + g.rows.length + "</span></summary>" +
+        '<div class="pp-rvsb">' + (open ? semBody(g, mine) : "") + "</div></details>";   // closed semesters are built when opened
     }).join("");
-    box.innerHTML = '<p class="pp-note" style="margin:0 2px 12px">🕶️ Reviews are <b>anonymous</b> — your name and ID are never shown or sent. Rate the faculty you took courses with (running and completed). You can edit any time.</p>' +
-      (html || '<div class="pp-card pp-empty"><span class="pp-em">🧑‍🏫</span>No faculty found in your courses yet</div>') + (mfBusy ? '<p class="pp-note" style="text-align:center"><span class="pp-spin"></span> ' + esc(mfProg) + "</p>" : "");
-    // wire
-    $$(".pp-rvsem", box).forEach(function (dt) { dt.addEventListener("toggle", function () { (rvState.open = rvState.open || {})[dt.getAttribute("data-sem")] = dt.open; }); });
+    box.innerHTML = '<p class="pp-note" style="margin:0 2px 12px">🕶️ Reviews are <b>anonymous</b> — your name and ID are never shown or sent. Rate the faculty you took courses with (running and completed). You can edit any time.' + (tot ? "<br><b>" + dn + " of " + tot + "</b> reviewed." : "") + "</p>" +
+      (html || '<div class="pp-card pp-empty"><span class="pp-em">🧑‍🏫</span>No faculty found in your courses yet</div>') + (mfBusy ? '<p class="pp-note" style="text-align:center"><span class="pp-spin"></span> <span id="pp-mfprog">' + esc(mfProg) + "</span></p>" : "");
+    $$(".pp-rvsem", box).forEach(function (dt) { dt.addEventListener("toggle", function () {
+      var t = dt.getAttribute("data-sem"); so[t] = dt.open;
+      var sb = $(".pp-rvsb", dt); if (dt.open && sb && !sb.firstChild) { var g = groups.filter(function (x) { return x.t === t; })[0]; if (g) { sb.innerHTML = semBody(g, myMap()); rvPics(); } }
+    }); });
     rvPics();
-    $$(".pp-rvc", box).forEach(function (card) {
-      var k = card.getAttribute("data-k"), parts = k.split("|"), sel = (mine[k] || {}).s || 0, form = $(".pp-rvform", card), ta = $("textarea", card), lab = $(".pp-slab", card), len = $(".pp-rvlen", card);
-      var info = (function () { var r = null; d.sems.some(function (s) { return s.courses.some(function (c) { return (c.t || []).some(function (t) { var x = { e: t.e, n: t.n, course: title(c.name), sec: c.sec, sem: s.t }; if (rvKey(x) === k) { r = x; return true; } }); }); }); return r; })();
-      function paintS() { $$("[data-s]", card).forEach(function (b) { b.classList.toggle("on", +b.getAttribute("data-s") <= sel); }); lab.textContent = sel ? ["", "Poor", "Fair", "Good", "Very good", "Excellent"][sel] : "Tap to rate"; }
-      $$("[data-s]", card).forEach(function (b) { b.onclick = function () { sel = +b.getAttribute("data-s"); rvDirty = true; paintS(); }; });
-      ta.oninput = function () { rvDirty = true; len.textContent = ta.value.length > 380 ? 500 - ta.value.length + " left" : ""; };
-      var ed = $("[data-edit]", card); if (ed) ed.onclick = function () { form.classList.add("open"); var mn = $(".pp-rvmine", card); if (mn) mn.style.display = "none"; };
-      var sb = $("[data-sub]", card); sb.onclick = function () {
-        if (!sel) { toast("Tap the stars to rate first"); return; }
+    if (box.__wired) return; box.__wired = 1;
+    /* one set of listeners for all cards (event delegation) */
+    function cardOf(el) { var c = el.closest(".pp-rvc"); return c && box.contains(c) ? c : null; }
+    function infoOf(card) { var k = card.getAttribute("data-k"), bk = box.__byK || {}; if (bk[k]) return bk[k]; var dd = mfGet(); if (!dd) return null; var r = null; giveRows(dd, myMap()).some(function (g) { return g.rows.some(function (x) { if (x.k === k) { r = x; return true; } }); }); return r; }
+    function selOf(card) { return +(card.getAttribute("data-sel") || ((myMap()[card.getAttribute("data-k")] || {}).s) || 0); }
+    box.addEventListener("click", function (ev) {
+      if (rvState.tab !== "give") return; var t = ev.target.closest("button"); if (!t || !box.contains(t)) return;
+      if (t.getAttribute("data-rv") === "retry") { t.disabled = true; mfLoad(true, givePaintSoon).then(function () { rvPaint(true); }, function () { t.disabled = false; }); rvPaint(true); return; }
+      var card = cardOf(t); if (!card) return;
+      var k = card.getAttribute("data-k"), info = infoOf(card), lab = $(".pp-slab", card), ta = $("textarea", card);
+      if (t.hasAttribute("data-s")) { var sel = +t.getAttribute("data-s"); card.setAttribute("data-sel", sel); rvDirty = true;
+        $$("[data-s]", card).forEach(function (b) { b.classList.toggle("on", +b.getAttribute("data-s") <= sel); }); lab.textContent = ["", "Poor", "Fair", "Good", "Very good", "Excellent"][sel]; return; }
+      if (t.hasAttribute("data-edit")) { $(".pp-rvform", card).classList.add("open"); var mn = $(".pp-rvmine", card); if (mn) mn.style.display = "none"; return; }
+      if (!info) { toast("Please refresh and try again"); return; }
+      if (t.hasAttribute("data-sub")) {
+        var s2 = selOf(card); if (!s2) { toast("Tap the stars to rate first"); return; }
         if (!rvCfg()) { toast("Review server not connected"); return; }
-        var cm = ta.value.replace(/\s+/g, " ").trim().slice(0, 500); sb.disabled = true; sb.textContent = "Submitting…";
-        ridFor(info).then(function (rid) { return rvReq("rpc/submit_review", "POST", { p_rid: rid, p_email: info.e, p_name: info.n, p_course: info.course, p_sem: info.sem, p_stars: sel, p_comment: cm }); })
-          .then(function () { var mm = myMap(); mm[k] = { s: sel, c: cm, t: Date.now() }; mySave(mm); toast("Review submitted ✓ Everyone can see it now"); return rvList(true).catch(function () {}); })
-          .then(function () { rvPaint(true); }, function (e) { sb.disabled = false; sb.textContent = "Submit"; toast(e.message === "NOSERVER" ? "Review server not connected" : e.message); });
-      };
-      var dl = $("[data-del]", card); if (dl) dl.onclick = function () {
-        if (!confirm("Remove your review for " + info.n + "?")) return; dl.disabled = true;
-        ridFor(info).then(function (rid) { return rvReq("rpc/delete_review", "POST", { p_rid: rid }); }).then(function () { var mm = myMap(); delete mm[k]; mySave(mm); toast("Review removed"); return rvList(true).catch(function () {}); })
-          .then(function () { rvPaint(true); }, function (e) { dl.disabled = false; toast(e.message); });
-      };
+        var cm = ta.value.replace(/\s+/g, " ").trim().slice(0, 500), label = t.textContent, rk = (myMap()[k] || {}).rk; t.disabled = true; t.textContent = "Submitting…";
+        ridFor(info, rk).then(function (rid) { return rvReq("rpc/submit_review", "POST", { p_rid: rid, p_email: info.e, p_name: info.n, p_course: info.course, p_sem: info.sem, p_stars: s2, p_comment: cm }); })
+          .then(function () { var mm = myMap(); mm[k] = { s: s2, c: cm, t: Date.now(), n: info.n }; if (rk) mm[k].rk = rk; mySave(mm); toast("Review submitted ✓ Everyone can see it now"); return rvList(true).catch(function () {}); })
+          .then(function () { rvPaint(true); }, function (e) { t.disabled = false; t.textContent = label; toast(e.message === "NOSERVER" ? "Review server not connected" : e.message); });
+        return;
+      }
+      if (t.hasAttribute("data-del")) {
+        if (!confirm("Remove your review for " + info.n + "?")) return; t.disabled = true;
+        ridFor(info, (myMap()[k] || {}).rk).then(function (rid) { return rvReq("rpc/delete_review", "POST", { p_rid: rid }); }).then(function () { var mm = myMap(); delete mm[k]; mySave(mm); toast("Review removed"); return rvList(true).catch(function () {}); })
+          .then(function () { rvPaint(true); }, function (e) { t.disabled = false; toast(e.message); });
+      }
     });
+    box.addEventListener("input", function (ev) { var ta = ev.target; if (ta.tagName !== "TEXTAREA") return; var card = cardOf(ta); if (!card) return; rvDirty = true; var len = $(".pp-rvlen", card); len.textContent = ta.value.length > 380 ? 500 - ta.value.length + " left" : ""; });
   }
   /* part 2: everybody's reviews */
   function allDraw(box) {
@@ -887,7 +953,7 @@
     }
     var focused = document.activeElement && document.activeElement.id === "pp-rvq";
     box.innerHTML = '<div class="pp-search" style="margin-bottom:10px">' + ic("search") + '<input class="pp-input" id="pp-rvq" placeholder="Search faculty, course or comment" value="' + esc(rvState.q) + '" autocomplete="off" enterkeyhint="search"></div>' +
-      '<div class="pp-tabs pp-fchips" style="margin-bottom:12px"><button data-so="faculty" class="' + (rvState.sort === "faculty" ? "on" : "") + '">By faculty</button><button data-so="top" class="' + (rvState.sort === "top" ? "on" : "") + '">Top rated</button><button data-so="comments" class="' + (rvState.sort === "comments" ? "on" : "") + '">With comments</button></div>' +
+      '<div class="pp-tabs pp-fchips" style="margin-bottom:12px"><button data-so="faculty" class="' + (rvState.sort === "faculty" ? "on" : "") + '">By faculty</button><button data-so="top" class="' + (rvState.sort === "top" ? "on" : "") + '">Top rated</button></div>' +
       '<div id="pp-rvlist"></div>';
     var inp = $("#pp-rvq", box), tm;
     inp.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { rvState.q = inp.value; rvState.show = 30; listDraw(); }, 140); };
@@ -918,7 +984,7 @@
     var qs = rvState.q.trim().toLowerCase().split(/\s+/).filter(Boolean), rep = jget(RV_REP, {});
     var base = rvAll;
     if (qs.length) { var qk = qs.join(" "); rvSearch(qk); var extra = rvSrch[qk]; if (extra && extra.length) { var seen = {}; base = rvAll.concat(extra).filter(function (r) { if (seen[r.id]) return false; seen[r.id] = 1; return true; }); } }
-    var list = base.filter(function (r) { if (rvState.sort === "comments" && !r.comment) return false; if (!qs.length) return true; var x = facBy(r.fac_email), hay = (r.fac_name + " " + r.course + " " + (r.comment || "") + " " + r.semester + " " + (x ? x[3] + " " + x[2] : "")).toLowerCase(); return qs.every(function (w) { return hay.indexOf(w) >= 0; }); });
+    var list = base.filter(function (r) { if (!qs.length) return true; var x = facBy(r.fac_email), hay = (r.fac_name + " " + r.course + " " + (r.comment || "") + " " + r.semester + " " + (x ? x[3] + " " + x[2] : "")).toLowerCase(); return qs.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var html = "";
     if (rvState.sort === "faculty" || rvState.sort === "top") {
       var ag = facAgg(list); ag.sort(rvState.sort === "top" ? function (a, b) { return (b.avg * b.cnt / (b.cnt + 2) + 3 * 2 / (b.cnt + 2)) - (a.avg * a.cnt / (a.cnt + 2) + 3 * 2 / (a.cnt + 2)) || b.cnt - a.cnt; } : function (a, b) { return a.n.localeCompare(b.n); });
@@ -926,10 +992,10 @@
       var byF = {}; base.forEach(function (r) { if (r.comment) (byF[r.fac_email] || (byF[r.fac_email] = [])).push(r); });
       var nRv = 0; ag.forEach(function (a) { nRv += a.cnt; });
       html = (ag.length ? '<div class="pp-rvcount"><b>' + ag.length + "</b> " + "faculty" + (qs.length ? " found" : " reviewed") + " · " + nRv + (nRv > 1 ? " reviews" : " review") + "</div>" : "") +
-        ag.slice(0, rvState.show).map(function (a) { var x = facBy(a.e), cms = (byF[a.e] || []).slice().sort(function (p, q) { return String(q.updated_at || q.created_at || "").localeCompare(String(p.updated_at || p.created_at || "")); }), op = !!rvState.open[a.e];
+        ag.slice(0, rvState.show).map(function (a) { var x = facBy(a.e), cms = (byF[a.e] || []).slice().sort(function (p, q) { return String(q.updated_at || q.created_at || "").localeCompare(String(p.updated_at || p.created_at || "")); }), op = !!rvState.fopen[a.e];
         return '<div class="pp-card pp-rvfw' + (op ? " open" : "") + '"><div class="pp-rvfrow"><button class="pp-rvf" data-fq="' + esc(a.n) + '">' + facPic(a.e, "", a.n) + '<div class="pp-t"><b>' + esc(a.n) + "</b><small>" + esc(x ? title(x[4].toLowerCase()) + " · " + title(x[3].toLowerCase()) : Object.keys(a.courses).slice(0, 2).join(" · ")) + '</small><div class="pp-rvavg">' + starsHtml(a.avg) + "<b>" + a.avg.toFixed(1) + "</b><small>" + a.cnt + (a.cnt > 1 ? " reviews" : " review") + (a.cm ? " · " + a.cm + " 💬" : "") + "</small></div></div></button>" +
           '<button class="pp-rvdd" data-dd="' + esc(a.e) + '" aria-expanded="' + op + '" title="' + (op ? "Hide comments" : "Show all comments") + '" aria-label="Comments">💬 ' + cms.length + ic("down") + "</button></div>" +
-          (op ? '<div class="pp-rvcms">' + (cms.length ? cms.map(function (r) { return '<div class="pp-rvc"><p class="pp-rvcm">' + esc(r.comment) + "</p><small>" + starsHtml(r.stars) + " " + esc(r.course) + " · " + esc(r.semester) + " · " + esc(agoIso(r.updated_at || r.created_at)) + "</small></div>"; }).join("") : '<div class="pp-rvc pp-rvc0">No written comments yet — only star ratings.</div>') + "</div>" : "") + "</div>"; }).join("");
+          (op ? '<div class="pp-rvcms">' + (cms.length ? cms.map(function (r) { return '<div class="pp-rvci"><p class="pp-rvcm">' + esc(r.comment) + "</p><small>" + starsHtml(r.stars) + " " + esc(r.course) + " · " + esc(r.semester) + " · " + esc(agoIso(r.updated_at || r.created_at)) + "</small></div>"; }).join("") : '<div class="pp-rvci pp-rvc0">No written comments yet — only star ratings.</div>') + "</div>" : "") + "</div>"; }).join("");
       var more = ag.length - rvState.show;
     } else {
       var one = qs.length ? facAgg(list) : []; var head = one.length === 1 ? '<div class="pp-card pp-rvsum">' + facPic(one[0].e, "", one[0].n, "lg") + '<div class="pp-t"><b>' + esc(one[0].n) + '</b><div class="pp-rvavg">' + starsHtml(one[0].avg, 1) + "<b>" + one[0].avg.toFixed(1) + "</b><small>" + one[0].cnt + (one[0].cnt > 1 ? " reviews" : " review") + "</small></div></div></div>" : "";
@@ -941,7 +1007,7 @@
     box.innerHTML = (html || '<div class="pp-card pp-empty"><span class="pp-em">⭐</span>' + (rvAll.length ? "No reviews match your search" : "No reviews yet — be the first! Go to “Give review”.") + "</div>") +
       (more > 0 ? '<div style="text-align:center;margin-top:14px"><button class="pp-btn" id="pp-rvmore">Show more (' + more + ")</button></div>" : "");
     var mb = $("#pp-rvmore", box); if (mb) mb.onclick = function () { rvState.show += 30; listDraw(); }; rvPics();
-    $$("[data-dd]", box).forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var e = b.getAttribute("data-dd"); if (rvState.open[e]) delete rvState.open[e]; else rvState.open[e] = 1; listDraw(); }; });
+    $$("[data-dd]", box).forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var e = b.getAttribute("data-dd"); if (rvState.fopen[e]) delete rvState.fopen[e]; else rvState.fopen[e] = 1; listDraw(); }; });
     $$("[data-fq]", box).forEach(function (b) { b.onclick = function () { rvState.q = b.getAttribute("data-fq"); rvState.sort = "latest"; rvState.show = 30; allDraw($("#pp-rvbody", app)); scTop(0); }; });
     $$("[data-rep]", box).forEach(function (b) { b.onclick = function () { if (!confirm("Report this review as abusive or fake? Reviews with several reports are hidden.")) return; var id = +b.getAttribute("data-rep");
       rvReq("rpc/report_review", "POST", { p_id: id }).then(function () { var r = jget(RV_REP, {}); r[id] = 1; jset(RV_REP, r); b.remove(); toast("Reported. Thanks!"); }, function (e) { toast(e.message); }); }; });
@@ -1361,7 +1427,11 @@
   var PP_VER = "3.9.3";
   var PP_NEW = [
     "Faculty review \u2192 All reviews: each faculty card now has a \ud83d\udcac dropdown next to the name that shows all comments for that faculty",
-    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed \u00b7 140 reviews\")"
+    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed \u00b7 140 reviews\")",
+    "The \"With comments\" tab was removed (comments are now in each faculty's dropdown)",
+    "Give review: reviews you gave in earlier semesters show as reviewed again, even if a course name is written a little differently",
+    "Give review is faster: closed semesters load when opened, fewer redraws while loading, and failed faculty pages are retried",
+    "Settings \u2192 Customize: Glass blur, Roundness and Text size now change live while you move the slider, with a live preview and value labels"
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
@@ -1457,7 +1527,7 @@
   VIEWS.classic = function (p) {
     var u = p.u || "/Student"; if (!/^\/(?!\/)/.test(u)) u = "/Student";
     setHead("Portal", '<span style="font-size:12.5px">' + esc(u.split("?")[0]) + "</span>", '<button class="pp-btn sm" onclick="history.back()">' + ic("back") + ' Back</button><a class="pp-btn sm" href="' + esc(u) + '" target="_blank" rel="noopener">' + ic("ext") + " New tab</a>");
-    return '<div class="pp-view" style="max-width:none"><iframe class="pp-frame" id="pp-frame" src="' + esc(u) + '"></iframe></div>';
+    return '<div class="pp-view pp-vclassic" style="max-width:none"><iframe class="pp-frame" id="pp-frame" src="' + esc(u) + '"></iframe></div>';
   };
   VIEWS.classic.after = function () {
     var fr = $("#pp-frame", app); if (!fr) return;

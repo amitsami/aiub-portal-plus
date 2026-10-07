@@ -47,25 +47,25 @@ html.ap[data-ap-bg="solid"] #ap-bg { background: var(--ap-bg) !important; }
 #pp-app .pp-card, #pp-app .pp-stat, #pp-app .pp-day, #pp-app .pp-summary > *, #ap-panel.ap-inline {
   background: linear-gradient(180deg, var(--lg-fill), var(--lg-fill-2)) !important;
   -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
-  border: 0 !important; border-radius: 24px;
+  border: 0 !important; border-radius: calc(var(--ap-radius) + 6px);
   box-shadow: inset 0 1px 0 var(--lg-edge), inset 0 0 0 1px var(--lg-stroke), var(--lg-shadow) !important; }
-#pp-app .pp-item { background: rgba(127,127,140,.07) !important; border: 0 !important; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--lg-stroke); content-visibility: visible; }
+#pp-app .pp-item { background: rgba(127,127,140,.07) !important; border: 0 !important; border-radius: calc(var(--ap-radius) - 2px); box-shadow: inset 0 0 0 1px var(--lg-stroke); content-visibility: visible; }
 #pp-app .pp-card .pp-card { box-shadow: inset 0 0 0 1px var(--lg-stroke) !important; background: rgba(127,127,140,.06) !important; }
 
 /* floating glass (real blur only on a few small fixed layers) */
 #pp-app .pp-side, #pp-app .pp-tabbar, #pp-cmd .pp-cmd-in, #pp-app .pp-toast {
   background: var(--lg-bar) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--ap-blur) + 2px)) saturate(180%); backdrop-filter: blur(calc(var(--ap-blur) + 2px)) saturate(180%);
   border: 0 !important;
   box-shadow: inset 0 1px 0 var(--lg-edge), inset 0 -1px 0 rgba(255,255,255,.12), inset 0 0 0 1px var(--lg-stroke), 0 18px 40px -18px rgba(0,0,0,.35) !important; }
-#pp-app .pp-side { border-radius: 28px; }
-#pp-app .pp-side .pp-nav a { border-radius: 14px; }
+#pp-app .pp-side { border-radius: calc(var(--ap-radius) + 10px); }
+#pp-app .pp-side .pp-nav a { border-radius: calc(var(--ap-radius-sm) + 2px); }
 #pp-app .pp-nav a.on { background: rgba(var(--ap-accent-rgb), .13); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
 #pp-app .pp-nav a.on::before { display: none; }
 
 /* segmented controls — iOS style */
-#pp-app .pp-tabs { background: rgba(127,127,140,.12) !important; border: 0 !important; border-radius: 14px; padding: 3px; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-#pp-app .pp-tabs button { border-radius: 11px; font-weight: 600; font-size: 13.5px; }
+#pp-app .pp-tabs { background: rgba(127,127,140,.12) !important; border: 0 !important; border-radius: calc(var(--ap-radius-sm) + 2px); padding: 3px; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+#pp-app .pp-tabs button { border-radius: max(3px, calc(var(--ap-radius-sm) - 1px)); font-weight: 600; font-size: 13.5px; }
 #pp-app .pp-tabs button.on { background: var(--ap-glass-strong) !important; color: var(--ap-text) !important; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 3px 10px -4px rgba(0,0,0,.18), inset 0 1px 0 var(--lg-edge) !important; }
 
 /* buttons */
@@ -104,13 +104,13 @@ html.ap[data-ap-bg="solid"] #ap-bg { background: var(--ap-bg) !important; }
     background: linear-gradient(180deg, var(--ap-bg) 0%, color-mix(in srgb, var(--ap-bg) 82%, transparent) 70%, transparent) ; }
   #pp-app .pp-top h1 { font-size: 26px; }
   #pp-app .pp-top .pp-sub { font-size: 12.5px; }
-  #pp-app .pp-card { padding: 16px; border-radius: 22px; }
-  #pp-app .pp-tabbar { border-radius: 30px; left: 14px; right: 14px; padding: 6px; bottom: calc(10px + env(safe-area-inset-bottom)); }
-  #pp-app .pp-tabbar a { border-radius: 24px; }
-  #pp-app .pp-pill { border-radius: 24px; background: rgba(var(--ap-accent-rgb), .13) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.35) !important; }
+  #pp-app .pp-card { padding: 16px; border-radius: calc(var(--ap-radius) + 4px); }
+  #pp-app .pp-tabbar { border-radius: calc(var(--ap-radius) + 12px); left: 14px; right: 14px; padding: 6px; bottom: calc(10px + env(safe-area-inset-bottom)); }
+  #pp-app .pp-tabbar a { border-radius: calc(var(--ap-radius) + 6px); }
+  #pp-app .pp-pill { border-radius: calc(var(--ap-radius) + 6px); background: rgba(var(--ap-accent-rgb), .13) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.35) !important; }
   #pp-app .pp-frame { height: calc(100dvh - 190px); }
   /* no live blur anywhere except the tab bar & search */
-  html.ap *:not(.pp-tabbar):not(.pp-cmd-in):not(#pp-cmd) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  html.ap *:not(.pp-tabbar):not(.pp-cmd-in):not(#pp-cmd):not(.ap-pv-glass) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   #pp-app .pp-view, #pp-app .pp-view > * { animation-duration: .25s; }
   #pp-app .pp-view > *:nth-child(n+4) { animation: none; }
 }
@@ -121,7 +121,7 @@ html.ap[data-ap-bg="solid"] #ap-bg { background: var(--ap-bg) !important; }
 }
 /* classic portal pages inside the app on phones: no blur = smooth scroll */
 @media (max-width: 900px), (pointer: coarse) {
-  html.ap.pp-embed *, html.ap.ap-login * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  html.ap.pp-embed *:not(.ap-pv-glass), html.ap.ap-login *:not(.ap-pv-glass) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 }
 /* ---- login: big, clear math box ---- */
 html.ap.ap-login #CaptchaInputText { font-size: 22px !important; font-weight: 700; text-align: center; letter-spacing: .08em; }
@@ -146,7 +146,7 @@ html.ap .ap-logo, html.ap .navbar-brand img { animation: none !important; }
   /* phone: solid frosted bar (no live blur) unless the device is powerful */
   #pp-app .pp-tabbar { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgba(255,255,255,.94) !important; }
   html.ap[data-ap-mode="dark"] #pp-app .pp-tabbar { background: rgba(28,30,38,.95) !important; }
-  html.pp-hq #pp-app .pp-tabbar { -webkit-backdrop-filter: blur(20px) saturate(180%) !important; backdrop-filter: blur(20px) saturate(180%) !important; background: var(--lg-bar) !important; }
+  html.pp-hq #pp-app .pp-tabbar { -webkit-backdrop-filter: blur(var(--ap-blur)) saturate(180%) !important; backdrop-filter: blur(var(--ap-blur)) saturate(180%) !important; background: var(--lg-bar) !important; }
   #pp-app .pp-card, #pp-app .pp-stat { box-shadow: inset 0 0 0 1px var(--lg-stroke), 0 1px 2px rgba(0,0,0,.04) !important; }
   #pp-app .pp-card { transition: none; }
   #pp-app .pp-btn, #pp-app .pp-iconbtn, #pp-app .pp-tabs button, #pp-app .pp-quick a, #pp-app .pp-tabbar a { transition: transform .12s ease, background .15s, color .15s !important; }
@@ -195,7 +195,7 @@ html.ap .ap-logo, html.ap .navbar-brand img { animation: none !important; }
 #pp-app .pp-nav a .pp-nbadge { animation: none; }
 #pp-app .pp-newdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; margin-left: 7px; vertical-align: middle; box-shadow: 0 0 0 3px rgba(239,68,68,.18); flex: none; }
 /* Go to Registration */
-#pp-app .pp-regbtn { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: rgba(var(--ap-accent-rgb), .1); color: var(--ap-text); text-decoration: none; transition: background .15s, transform .12s; }
+#pp-app .pp-regbtn { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; border-radius: var(--ap-radius); background: rgba(var(--ap-accent-rgb), .1); color: var(--ap-text); text-decoration: none; transition: background .15s, transform .12s; }
 #pp-app .pp-regbtn:hover { background: rgba(var(--ap-accent-rgb), .16); }
 #pp-app .pp-regbtn:active { transform: scale(.98); }
 #pp-app .pp-regbtn .pp-qi { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; background: var(--ap-accent); color: #fff; }
@@ -219,7 +219,7 @@ html.ap .ap-logo, html.ap .navbar-brand img { animation: none !important; }
   #pp-app .pp-main { position: relative; }
   #pp-app .pp-top { position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 18px 30px 12px; border-radius: 0 0 22px 22px; }
   #pp-app .pp-scroll { padding-top: calc(var(--pp-toph, 84px) + 4px); scroll-padding-top: var(--pp-toph, 84px); }
-  #pp-app .pp-top.pp-scrolled { background: var(--lg-bar, rgba(255,255,255,.62)); -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%); box-shadow: inset 0 -1px 0 var(--lg-stroke), 0 12px 30px -22px rgba(0,0,0,.35); }
+  #pp-app .pp-top.pp-scrolled { background: var(--lg-bar, rgba(255,255,255,.62)); -webkit-backdrop-filter: blur(var(--ap-blur)) saturate(180%); backdrop-filter: blur(var(--ap-blur)) saturate(180%); box-shadow: inset 0 -1px 0 var(--lg-stroke), 0 12px 30px -22px rgba(0,0,0,.35); }
 }
 @media (max-width: 900px) {
   #pp-app .pp-hlogo { display: block; width: 36px; height: 36px; padding: 4px; border-radius: 11px; background: #fff; flex: none; box-shadow: inset 0 0 0 1px var(--lg-stroke); align-self: center; }
@@ -227,7 +227,7 @@ html.ap .ap-logo, html.ap .navbar-brand img { animation: none !important; }
   #pp-app .pp-top > .pp-iconbtn { width: 34px; height: 34px; }
   #pp-app .pp-top .pp-grow { margin-left: 4px; }
   html.ap #pp-app header.pp-top { box-shadow: none !important; }
-  html.ap #pp-app header.pp-top.pp-scrolled { background: rgba(247,246,243,.72) !important; -webkit-backdrop-filter: blur(16px) saturate(180%) !important; backdrop-filter: blur(16px) saturate(180%) !important; box-shadow: 0 1px 0 var(--lg-stroke), 0 10px 24px -20px rgba(0,0,0,.4) !important; }
+  html.ap #pp-app header.pp-top.pp-scrolled { background: rgba(247,246,243,.72) !important; -webkit-backdrop-filter: blur(calc(var(--ap-blur) * .75)) saturate(180%) !important; backdrop-filter: blur(calc(var(--ap-blur) * .75)) saturate(180%) !important; box-shadow: 0 1px 0 var(--lg-stroke), 0 10px 24px -20px rgba(0,0,0,.4) !important; }
   html.ap[data-ap-mode="dark"] #pp-app header.pp-top.pp-scrolled { background: rgba(7,8,12,.68) !important; }
   #pp-app .pp-quick a .pp-nbadge { right: calc(50% - 27px); }
   #pp-app .pp-regbtn { padding: 11px 12px; }
@@ -262,7 +262,7 @@ html.ap .ap-logo, html.ap .navbar-brand img { animation: none !important; }
   #pp-app .pp-live { animation: none !important; }
 }
 /* Firefox (esp. Android): its blur is slow — use solid frosted fills everywhere */
-html.pp-ff #pp-app *, html.pp-ff #pp-cmd, html.pp-ff #pp-cmd * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.pp-ff #pp-app *:not(.ap-pv-glass), html.pp-ff #pp-cmd, html.pp-ff #pp-cmd * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html.pp-ff #pp-app .pp-side, html.pp-ff #pp-app .pp-tabbar, html.pp-ff #pp-cmd .pp-cmd-in, html.pp-ff #pp-app .pp-toast { background: rgba(255,255,255,.96) !important; }
 html.pp-ff[data-ap-mode="dark"] #pp-app .pp-side, html.pp-ff[data-ap-mode="dark"] #pp-app .pp-tabbar, html.pp-ff[data-ap-mode="dark"] #pp-cmd .pp-cmd-in, html.pp-ff[data-ap-mode="dark"] #pp-app .pp-toast { background: rgba(26,28,36,.97) !important; }
 html.pp-ff #pp-app .pp-top.pp-scrolled { background: rgba(247,246,243,.95) !important; }
@@ -300,7 +300,7 @@ html.pp-ff #pp-cmd { background: rgba(8,10,20,.45) !important; }
 #pp-app .pp-fchips { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 #pp-app .pp-fchips::-webkit-scrollbar { display: none; } #pp-app .pp-fchips button { white-space: nowrap; flex: none; }
 #pp-app .pp-fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
-#pp-app .pp-fac { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 18px; background: var(--lg-fill); box-shadow: inset 0 0 0 1px var(--lg-stroke); }
+#pp-app .pp-fac { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: var(--ap-radius); background: var(--lg-fill); box-shadow: inset 0 0 0 1px var(--lg-stroke); }
 #pp-app .pp-fac img { width: 56px; height: 56px; border-radius: 16px; object-fit: cover; object-position: top; flex: none; background: rgba(127,127,140,.12); }
 #pp-app .pp-fac .pp-t { min-width: 0; flex: 1; } #pp-app .pp-fac .pp-t b { display: block; font-size: 14.5px; line-height: 1.25; }
 #pp-app .pp-fac .pp-t small { display: block; color: var(--ap-muted); font-size: 12px; margin-top: 2px; }
@@ -376,8 +376,8 @@ html.ap .login-form { animation: none !important; }
 #pp-app .pp-rvdd { display: inline-flex; align-items: center; gap: 3px; flex: none; margin-right: 12px; padding: 6px 9px; border: 1px solid rgba(127,127,127,.28); border-radius: 999px; background: none; color: inherit; font: inherit; font-size: 12.5px; cursor: pointer; }
 #pp-app .pp-rvdd svg.i { width: 15px; height: 15px; transition: transform .2s; } #pp-app .pp-rvfw.open .pp-rvdd svg.i { transform: rotate(180deg); }
 #pp-app .pp-rvcms { border-top: 1px solid var(--ap-hair); padding: 4px 14px 10px; max-height: 420px; overflow-y: auto; }
-#pp-app .pp-rvc { padding: 9px 0; border-bottom: 1px solid var(--ap-hair); } #pp-app .pp-rvc:last-child { border-bottom: 0; }
-#pp-app .pp-rvc .pp-rvcm { margin: 0 0 4px; } #pp-app .pp-rvc small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--ap-muted); font-size: 11.5px; } #pp-app .pp-rvc0 { color: var(--ap-muted); font-size: 13px; }
+#pp-app .pp-rvci { padding: 9px 0; border-bottom: 1px solid var(--ap-hair); } #pp-app .pp-rvci:last-child { border-bottom: 0; }
+#pp-app .pp-rvci .pp-rvcm { margin: 0 0 4px; } #pp-app .pp-rvci small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--ap-muted); font-size: 11.5px; } #pp-app .pp-rvc0 { color: var(--ap-muted); font-size: 13px; }
 #pp-app .pp-rvavg { display: flex; align-items: center; gap: 6px; margin-top: 5px; } #pp-app .pp-rvavg b { font-size: 14px; } #pp-app .pp-rvavg small { color: var(--ap-muted); font-size: 12px; }
 #pp-app .pp-rvsum { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; padding: 14px; }
 #pp-app .pp-rvsem > summary { list-style: none; cursor: pointer; -webkit-tap-highlight-color: transparent; } #pp-app .pp-rvsem > summary::-webkit-details-marker { display: none; }
@@ -387,3 +387,10 @@ html.ap .login-form { animation: none !important; }
 #pp-app .pp-hero .pp-rvhome .pp-qi { color: #f59e0b; }
 #pp-app .pp-hero .pp-rvfaces .pp-rvpic { box-shadow: 0 0 0 2px rgba(255,255,255,.7); }
 #pp-app .pp-regbtn .pp-chip.mute { background: rgba(255,255,255,.28) !important; color: #fff !important; }
+
+/* Customize → Text size: scales the whole page content (cards, tables, text) live. The settings panel itself
+   is kept at normal size so the slider doesn't move under your finger; its preview shows the new size. */
+#pp-app .pp-view { zoom: var(--ap-font-scale); }
+#pp-app .pp-view.pp-vclassic { zoom: 1; }   /* classic pages scale their own text */
+#pp-app .pp-view #ap-panel.ap-inline { zoom: calc(1 / var(--ap-font-scale)); }
+#pp-app .pp-rvmiss { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 2px 12px; }
