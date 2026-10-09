@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "AIUB Portal+ — Modern UI",
   "short_name": "AIUB Portal+",
-  "version": "3.9.3",
-  "description": "Modern, fast app-style UI for the AIUB student portal. Only changes the design. Your portal data never leaves your browser.",
+  "version": "3.9.4",
+  "description": "Unofficial: modern, fast app-style design for the AIUB Student Portal. Your portal data never leaves your browser.",
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",
@@ -42,5 +42,6 @@
     "scripts": [
       "bg.js"
     ]
-  }
+  },
+  "homepage_url": "https://github.com/amitsami/aiub-portal-plus"
 }

@@ -149,7 +149,8 @@ When a new version is out, Portal+ tells you automatically:
 
 - **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
 - **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
-- **Browser extension:** does not update itself. Download the new `AIUB-Portal-Plus-extension.zip` from [Releases](https://github.com/amitsami/aiub-portal-plus/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
+- **From a store (Edge Add-ons, Firefox Add-ons, Opera add-ons, Greasy Fork):** updates install automatically. Store links are added here once each store approves Portal+.
+- **Browser extension (zip):** does not update itself. Download the new `AIUB-Portal-Plus-extension.zip` from [Releases](https://github.com/amitsami/aiub-portal-plus/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
 
 ## Turning it off or removing it
 
@@ -189,6 +190,7 @@ When a new version is out, Portal+ tells you automatically:
 - Your ID and password are typed into the real portal login page. Portal+ never reads or stores them.
 - Cached data stays on your device and is cleared when you sign out.
 - Faculty reviews are anonymous: only the faculty, course, semester, stars, comment and a one-way scrambled code are sent. Your name and student ID are never sent.
+- Full privacy policy: [PRIVACY.md](PRIVACY.md)
 
 ## For developers
 
@@ -221,3 +223,5 @@ node --check userscript/AIUB-Portal-Plus.user.js
 Amit Hasan Sami ([@amitsami](https://github.com/amitsami))
 
 AIUB Portal+ is an unofficial student project and is not affiliated with American International University-Bangladesh.
+
+License: [MIT](LICENSE)

@@ -1424,14 +1424,12 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9.3";
+  var PP_VER = "3.9.4";
   var PP_NEW = [
-    "Faculty review \u2192 All reviews: each faculty card now has a \ud83d\udcac dropdown next to the name that shows all comments for that faculty",
-    "The list now shows how many faculty have been reviewed (for example \"52 faculty reviewed \u00b7 140 reviews\")",
-    "The \"With comments\" tab was removed (comments are now in each faculty's dropdown)",
-    "Give review: reviews you gave in earlier semesters show as reviewed again, even if a course name is written a little differently",
-    "Give review is faster: closed semesters load when opened, fewer redraws while loading, and failed faculty pages are retried",
-    "Settings \u2192 Customize: Glass blur, Roundness and Text size now change live while you move the slider, with a live preview and value labels"
+    "New Portal+ logo (AIUB logo with \"Portal+\")",
+    "Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates",
+    "Installed from a store: updates install by themselves, so the \"Update available\" banner is not shown",
+    "Tampermonkey: \"Update now\" opens the update from where you installed it (GitHub or Greasy Fork)"
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
@@ -1439,6 +1437,20 @@
       UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen", UPD_LATER = "aiubPlus.update.later", VER_SEEN = "aiubPlus.ver.seen";
   function verCmp(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < Math.max(a.length, b.length); i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
   function isUS() { return typeof GM_info !== "undefined" || typeof GM_xmlhttpRequest === "function" || (typeof GM !== "undefined" && !!GM); }
+  /* Installed from a browser store (Edge, Opera, Chrome, Firefox)? Then the store updates Portal+ by itself. */
+  function storeName() {
+    try {
+      var rt = typeof browser !== "undefined" && browser.runtime && browser.runtime.getManifest ? browser.runtime : typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getManifest ? chrome.runtime : null;
+      if (!rt || isUS()) return ""; var m = rt.getManifest() || {}, u = m.update_url || "";
+      if (u) return /microsoft|edge/i.test(u) ? "Microsoft Edge Add-ons" : /opera/i.test(u) ? "Opera add-ons" : /google/i.test(u) ? "Chrome Web Store" : "";
+      if (typeof browser !== "undefined" && /firefox/i.test(navigator.userAgent)) return "Firefox Add-ons";
+    } catch (e) {}
+    return "";
+  }
+  function usLink() {   // Tampermonkey: update from where it was installed (GitHub or Greasy Fork)
+    try { var sc = GM_info && GM_info.script, u = sc && (sc.downloadURL || sc.updateURL); if (u && /^https:\/\/[^ ]+\.user\.js(\?|$)/.test(u)) return u; } catch (e) {}
+    return US_URL;
+  }
   function updNewer() { var c = jget(UPD_KEY, null), d = c && c.d; return d && d.version && verCmp(d.version, PP_VER) > 0 ? d : null; }
   function updN() { var d = updNewer(); return d && jget(UPD_SEEN, "") !== d.version ? 1 : 0; }
   function updGet(force) {
@@ -1451,23 +1463,25 @@
       .catch(function () { return c && c.d; });
   }
   function updCard() {
-    var d = updNewer(), us = isUS(), c = jget(UPD_KEY, null), rd = c && c.d;
+    var d = updNewer(), us = isUS(), st = storeName(), c = jget(UPD_KEY, null), rd = c && c.d;
     var notes = d ? (Array.isArray(d.notes) ? d.notes : []) : (rd && rd.version === PP_VER && Array.isArray(rd.notes) && rd.notes.length ? rd.notes : PP_NEW);
-    var link = d ? (us ? US_URL : (d.release || GH_REPO + "/releases/latest")) : GH_REPO + "/releases/latest";
+    var link = d ? (us ? usLink() : (d.release || GH_REPO + "/releases/latest")) : GH_REPO + "/releases/latest";
     var head = d ? ic("spark") + " Update available" + NEWDOT + '<span class="pp-more"><span class="pp-chip">v' + esc(d.version) + "</span></span>"
                  : ic("check") + " AIUB Portal+ v" + PP_VER + '<span class="pp-more"><span class="pp-chip ok">\u2713 Up to date</span></span>';
     return '<div class="pp-card pp-upd' + (d ? " pp-upd-new" : "") + '" id="pp-upd"><h3>' + head + "</h3>" +
       '<p class="pp-note" style="margin:0 0 8px">' + (d ? "<b>AIUB Portal+ v" + esc(d.version) + "</b>" + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You are using the latest version. What\u2019s new in v" + PP_VER + ":") + "</p>" +
       '<ul class="pp-updl">' + notes.slice(0, 10).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
-      (d ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your Portal+ folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
-      '<div class="pp-row" style="gap:8px;flex-wrap:wrap">' + (d ? '<a class="pp-btn pri sm" href="' + esc(link) + '" target="_blank" rel="noopener">' + ic("refresh") + (us ? " Update now" : " Download update") + "</a>" : "") +
+      (d && st ? '<p class="pp-note" style="margin:0 0 10px">Installed from <b>' + esc(st) + "</b>: your browser installs this update automatically (usually within a day after the store approves it). Nothing to do.</p>" : "") +
+      (!d && st ? '<p class="pp-note" style="margin:0 0 10px">Updates install automatically from <b>' + esc(st) + "</b>.</p>" : "") +
+      (d && !st ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your Portal+ folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
+      '<div class="pp-row" style="gap:8px;flex-wrap:wrap">' + (d && !st ? '<a class="pp-btn pri sm" href="' + esc(link) + '" target="_blank" rel="noopener">' + ic("refresh") + (us ? " Update now" : " Download update") + "</a>" : "") +
       '<a class="pp-btn sm" href="' + GH_REPO + '/releases/latest" target="_blank" rel="noopener">' + ic("github") + " View on GitHub</a></div></div>";
   }
   /* Home banner: "Update available" (until updated; "Later" hides it for a day) or, once, "Updated to vX". */
   function updBarHtml() {
     var d = updNewer(), seen = jget(VER_SEEN, "");
     if (d) {
-      if (+jget(UPD_LATER + "." + d.version, 0) > Date.now()) return "";
+      if (+jget(UPD_LATER + "." + d.version, 0) > Date.now() || storeName()) return "";   // store installs update by themselves
       return '<div class="pp-card pp-updbar new" id="pp-updbar"><span class="pp-qi">' + ic("spark") + '</span><div class="pp-t"><b>Update available \u00b7 v' + esc(d.version) + "</b><small>" + esc((d.notes || [])[0] || "New features and fixes") + '</small></div><a class="pp-btn pri sm" href="#/more" data-upd="more">What\u2019s new</a><button class="pp-iconbtn" data-upd="later" title="Later" aria-label="Later">' + ic("x") + "</button></div>";
     }
     if (seen && seen !== PP_VER) return '<div class="pp-card pp-updbar" id="pp-updbar"><span class="pp-qi">' + ic("check") + '</span><div class="pp-t"><b>Updated to v' + PP_VER + " \ud83c\udf89</b><small>You are up to date. See what\u2019s new in this version.</small></div>" + '<a class="pp-btn sm" href="#/more" data-upd="more">What\u2019s new</a><button class="pp-iconbtn" data-upd="ok" title="Close" aria-label="Close">' + ic("x") + "</button></div>";

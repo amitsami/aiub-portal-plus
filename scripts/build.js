@@ -23,6 +23,7 @@ const header = [
   "// @author       amitsami",
   "// @homepageURL  https://github.com/amitsami/aiub-portal-plus",
   "// @supportURL   https://github.com/amitsami/aiub-portal-plus/issues",
+  "// @license      MIT",
   "// @updateURL    " + RAW,
   "// @downloadURL  " + RAW,
   "// @match        https://portal.aiub.edu/*",

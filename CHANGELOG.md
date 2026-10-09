@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.9.4 - Store versions and new logo
+- New Portal+ logo (AIUB logo with "Portal+")
+- Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates
+- Installed from a store: updates install by themselves, so the "Update available" banner is not shown
+- Tampermonkey: "Update now" opens the update from where you installed it (GitHub or Greasy Fork)
+
 ## 3.9.3 - Faculty comments, faster Give review, live Customize
 - Faculty review → All reviews: each faculty card now has a 💬 dropdown next to the name that shows all comments for that faculty
 - The list now shows how many faculty have been reviewed (for example "52 faculty reviewed · 140 reviews")
