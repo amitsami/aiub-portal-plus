@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * StudentDesk AIUB build script
- * Generates userscript/AIUB-Portal-Plus.user.js from the extension/ sources:
+ * Generates userscript/StudentDesk-AIUB.user.js from the extension/ sources:
  *   header (from manifest.json) + CSS (theme.css, shell.css, glass.css) + app.js + shell.js
  * Usage: node scripts/build.js
  */
@@ -12,7 +12,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const ext = (f) => fs.readFileSync(path.join(root, "extension", f), "utf8");
 const manifest = JSON.parse(ext("manifest.json"));
-const RAW = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js";
+const RAW = "https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js";
 
 const header = [
   "// ==UserScript==",
@@ -21,8 +21,8 @@ const header = [
   "// @version      " + manifest.version,
   "// @description  " + manifest.description,
   "// @author       amitsami",
-  "// @homepageURL  https://github.com/amitsami/aiub-portal-plus",
-  "// @supportURL   https://github.com/amitsami/aiub-portal-plus/issues",
+  "// @homepageURL  https://github.com/amitsami/studentdesk-aiub",
+  "// @supportURL   https://github.com/amitsami/studentdesk-aiub/issues",
   "// @license      MIT",
   "// @updateURL    " + RAW,
   "// @downloadURL  " + RAW,
@@ -54,7 +54,7 @@ if (!/var PP_VER = /.test(shell2) || !/var PP_NEW = \[/.test(shell2)) { console.
 if (shell2 !== shell) fs.writeFileSync(shellPath, shell2);
 const today = new Date().toISOString().slice(0, 10);
 let prevUpd = {}; try { prevUpd = JSON.parse(fs.readFileSync(path.join(root, "update.json"), "utf8")); } catch (e) {}
-const upd = { version: manifest.version, date: prevUpd.version === manifest.version && prevUpd.date ? prevUpd.date : today, title: top[2].trim(), notes: notes, release: "https://github.com/amitsami/aiub-portal-plus/releases/latest" };
+const upd = { version: manifest.version, date: prevUpd.version === manifest.version && prevUpd.date ? prevUpd.date : today, title: top[2].trim(), notes: notes, release: "https://github.com/amitsami/studentdesk-aiub/releases/latest" };
 fs.writeFileSync(path.join(root, "update.json"), JSON.stringify(upd, null, 2) + "\n");
 
 const css = ["theme.css", "shell.css", "glass.css"].map(ext).join("\n");
@@ -64,6 +64,8 @@ const style =
   ";(document.head||document.documentElement).appendChild(s);})();";
 
 const out = [header, style, ext("app.js"), ext("shell.js")].join("\n");
-const dest = path.join(root, "userscript", "AIUB-Portal-Plus.user.js");
+const dest = path.join(root, "userscript", "StudentDesk-AIUB.user.js");
 fs.writeFileSync(dest, out);
+// Compatibility copy: older installs check this path for updates. Remove after everyone has updated.
+fs.writeFileSync(path.join(root, "userscript", "AIUB-Portal-Plus.user.js"), out);
 console.log("Built " + path.relative(root, dest) + " (v" + manifest.version + ", " + Buffer.byteLength(out) + " bytes)");

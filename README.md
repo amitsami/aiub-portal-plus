@@ -2,7 +2,7 @@
 
 Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu) on phone and PC. Your data never leaves your browser.
 
-**[Install the userscript](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)** · **[Download the latest release](https://github.com/amitsami/aiub-portal-plus/releases/latest)** · **[Install guide](docs/INSTALL.md)**
+**[Install the userscript](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js)** · **[Download the latest release](https://github.com/amitsami/studentdesk-aiub/releases/latest)** · **[Install guide](docs/INSTALL.md)**
 
 ## Contents
 
@@ -34,17 +34,17 @@ You only need **one** of them. Do not install both at the same time.
 
 | Your device | Download this | How to use it |
 | --- | --- | --- |
-| **Android phone** | [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js) (just open the link) | 1. Install **Firefox** from the Play Store.<br>2. Firefox -> Menu -> **Add-ons** -> install **Tampermonkey**.<br>3. Open the userscript link in Firefox -> tap **Install**.<br>4. Go to portal.aiub.edu and sign in. |
-| **iPhone / iPad** | [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js) | 1. Install the free **Userscripts** app from the App Store.<br>2. Settings -> Safari -> Extensions -> turn on **Userscripts** and allow portal.aiub.edu.<br>3. Open the userscript link in Safari -> tap the Userscripts icon -> **Install**.<br>4. Go to portal.aiub.edu. |
-| **PC (easiest, auto-updates)** | [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js) (just open the link) | 1. Install **Tampermonkey** from your browser's extension store (Chrome, Edge, Brave, Firefox, Opera).<br>2. Chrome / Edge: turn on **Developer mode** on the extensions page (Tampermonkey needs it).<br>3. Open the userscript link -> click **Install**.<br>4. Go to portal.aiub.edu. |
-| **PC (no Tampermonkey)** | [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip) | 1. Download and **extract** (unzip) the file.<br>2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).<br>3. Turn on **Developer mode** -> **Load unpacked** -> choose the extracted folder.<br>4. Go to portal.aiub.edu. Do not delete the folder afterwards. |
-| **Tampermonkey zip** (phone **and** PC) | [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) | **Phone (Android, Firefox + Tampermonkey):** download the zip -> tap the Tampermonkey icon (Firefox menu -> Add-ons -> Tampermonkey) -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip from Downloads -> **Install**.<br>**PC:** Tampermonkey icon -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**.<br>Useful when the userscript link does not open an install page. Do not unzip it. |
+| **Android phone** | [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js) (just open the link) | 1. Install **Firefox** from the Play Store.<br>2. Firefox -> Menu -> **Add-ons** -> install **Tampermonkey**.<br>3. Open the userscript link in Firefox -> tap **Install**.<br>4. Go to portal.aiub.edu and sign in. |
+| **iPhone / iPad** | [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js) | 1. Install the free **Userscripts** app from the App Store.<br>2. Settings -> Safari -> Extensions -> turn on **Userscripts** and allow portal.aiub.edu.<br>3. Open the userscript link in Safari -> tap the Userscripts icon -> **Install**.<br>4. Go to portal.aiub.edu. |
+| **PC (easiest, auto-updates)** | [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js) (just open the link) | 1. Install **Tampermonkey** from your browser's extension store (Chrome, Edge, Brave, Firefox, Opera).<br>2. Chrome / Edge: turn on **Developer mode** on the extensions page (Tampermonkey needs it).<br>3. Open the userscript link -> click **Install**.<br>4. Go to portal.aiub.edu. |
+| **PC (no Tampermonkey)** | [StudentDesk-AIUB-extension.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-extension.zip) | 1. Download and **extract** (unzip) the file.<br>2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).<br>3. Turn on **Developer mode** -> **Load unpacked** -> choose the extracted folder.<br>4. Go to portal.aiub.edu. Do not delete the folder afterwards. |
+| **Tampermonkey zip** (phone **and** PC) | [StudentDesk-AIUB-Tampermonkey.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-Tampermonkey.zip) | **Phone (Android, Firefox + Tampermonkey):** download the zip -> tap the Tampermonkey icon (Firefox menu -> Add-ons -> Tampermonkey) -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip from Downloads -> **Install**.<br>**PC:** Tampermonkey icon -> **Dashboard** -> **Utilities** -> **Import from file** -> choose the zip -> **Install**.<br>Useful when the userscript link does not open an install page. Do not unzip it. |
 
-> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [StudentDesk-AIUB-Tampermonkey.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
 
 > `schema.sql` is only for the developer (review server database). Students do not need it.
 
-**Updates:** the userscript updates itself through Tampermonkey. The extension zip does not update itself; download the new zip from [Releases](https://github.com/amitsami/aiub-portal-plus/releases) and click **Reload** on the extensions page.
+**Updates:** the userscript updates itself through Tampermonkey. The extension zip does not update itself; download the new zip from [Releases](https://github.com/amitsami/studentdesk-aiub/releases) and click **Reload** on the extensions page.
 ## Step-by-step install
 
 ### Android phone
@@ -52,20 +52,20 @@ You only need **one** of them. Do not install both at the same time.
 1. Open the **Play Store**, search for **Firefox** and install it. (Chrome on Android does not support add-ons, so Firefox is needed.)
 2. Open Firefox, tap the **menu (three dots)** -> **Add-ons** -> **Add-ons Manager**.
 3. Find **Tampermonkey** in the list (or search for it) and tap **+** -> **Add**.
-4. In Firefox, open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+4. In Firefox, open this link: [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js)
 5. Tampermonkey shows an install page. Tap **Install**.
 6. Open https://portal.aiub.edu and sign in as usual. The new design appears automatically.
 
 Tip: in Firefox, tap the menu -> **Add to Home screen** while on the portal to open it like an app.
 
-> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
+> **If the `.js` link does not work on your phone, use the Tampermonkey zip instead - it works.** Download [StudentDesk-AIUB-Tampermonkey.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-Tampermonkey.zip) and import it in Tampermonkey (see [Tampermonkey zip import](#tampermonkey-zip-import-phone-and-pc)).
 
 ### iPhone / iPad
 
 1. Open the **App Store**, search for **Userscripts** (free, by Justin Wasack) and install it.
 2. Open **Settings -> Safari -> Extensions -> Userscripts**, turn it **on**, and set **portal.aiub.edu** (or All Websites) to **Allow**.
 3. Open the Userscripts app once and choose a folder to save scripts (for example, "On My iPhone -> Userscripts").
-4. In **Safari**, open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+4. In **Safari**, open this link: [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js)
 5. Tap the **puzzle / aA icon** in the address bar -> **Userscripts** -> **Install**.
 6. Open https://portal.aiub.edu in Safari and sign in.
 
@@ -78,7 +78,7 @@ Works in Chrome, Edge, Brave, Firefox and Opera.
    - Edge: [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
    - Firefox: [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/tampermonkey/)
 2. **Chrome / Edge / Brave only:** open the extensions page (`chrome://extensions`), turn on **Developer mode** (top right), then open Tampermonkey's **Details** and turn on **Allow User Scripts** if you see that option. Tampermonkey needs this to run scripts.
-3. Open this link: [AIUB-Portal-Plus.user.js](https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js)
+3. Open this link: [StudentDesk-AIUB.user.js](https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js)
 4. Tampermonkey opens an install page. Click **Install**.
 5. Open https://portal.aiub.edu and sign in.
 
@@ -86,7 +86,7 @@ Works in Chrome, Edge, Brave, Firefox and Opera.
 
 Works in Chrome, Edge and Brave.
 
-1. Download [AIUB-Portal-Plus-extension.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-extension.zip).
+1. Download [StudentDesk-AIUB-extension.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-extension.zip).
 2. **Extract** the zip: right-click -> **Extract All** (Windows) or double-click (Mac). You get a folder with `manifest.json` inside.
 3. Move that folder somewhere safe (for example, Documents). **Do not delete it later** - the browser loads the extension from this folder.
 4. Open `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`).
@@ -104,16 +104,16 @@ The Tampermonkey zip works on **phones too**, not only on PC. **If the `.js` lin
 **On an Android phone (Firefox + Tampermonkey):**
 
 1. Install Firefox and the Tampermonkey add-on (see [Android phone](#android-phone), steps 1-3).
-2. Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip) in Firefox. It is saved to your **Downloads** folder.
+2. Download [StudentDesk-AIUB-Tampermonkey.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-Tampermonkey.zip) in Firefox. It is saved to your **Downloads** folder.
 3. Open Firefox **menu (three dots)** -> **Add-ons** -> **Tampermonkey** -> **Dashboard**.
 4. Tap the **Utilities** tab.
-5. Under **Import from file**, tap **Choose file** and select `AIUB-Portal-Plus-Tampermonkey.zip` from Downloads.
+5. Under **Import from file**, tap **Choose file** and select `StudentDesk-AIUB-Tampermonkey.zip` from Downloads.
 6. Tap **Install** (or **Import**) on the page that opens.
 7. Open https://portal.aiub.edu and sign in.
 
 **On a PC:**
 
-1. Download [AIUB-Portal-Plus-Tampermonkey.zip](https://github.com/amitsami/aiub-portal-plus/releases/latest/download/AIUB-Portal-Plus-Tampermonkey.zip).
+1. Download [StudentDesk-AIUB-Tampermonkey.zip](https://github.com/amitsami/studentdesk-aiub/releases/latest/download/StudentDesk-AIUB-Tampermonkey.zip).
 2. Click the Tampermonkey icon -> **Dashboard** -> **Utilities**.
 3. Under **Import from file**, choose the zip -> **Install**.
 
@@ -150,7 +150,7 @@ When a new version is out, StudentDesk tells you automatically:
 - **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
 - **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
 - **From a store (Edge Add-ons, Firefox Add-ons, Opera add-ons, Greasy Fork):** updates install automatically. Store links are added here once each store approves StudentDesk.
-- **Browser extension (zip):** does not update itself. Download the new `AIUB-Portal-Plus-extension.zip` from [Releases](https://github.com/amitsami/aiub-portal-plus/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
+- **Browser extension (zip):** does not update itself. Download the new `StudentDesk-AIUB-extension.zip` from [Releases](https://github.com/amitsami/studentdesk-aiub/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
 
 ## Turning it off or removing it
 
@@ -168,7 +168,7 @@ When a new version is out, StudentDesk tells you automatically:
 | "Manifest file is missing" when loading the extension | Choose the folder that directly contains `manifest.json`, not the zip and not a parent folder. |
 | The extension stopped working | You probably moved or deleted the extracted folder. Load it again from its new location. |
 | Faculty reviews do not load | Check your internet connection and tap **Refresh** on the Reviews page. |
-| Something else | [Open an issue](https://github.com/amitsami/aiub-portal-plus/issues) with your device, browser and a screenshot. |
+| Something else | [Open an issue](https://github.com/amitsami/studentdesk-aiub/issues) with your device, browser and a screenshot. |
 
 ## Features
 
@@ -215,7 +215,7 @@ Build the userscript after changing files in `extension/`:
 
 ```bash
 node scripts/build.js
-node --check userscript/AIUB-Portal-Plus.user.js
+node --check userscript/StudentDesk-AIUB.user.js
 ```
 
 ## Author

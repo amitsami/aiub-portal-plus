@@ -1424,15 +1424,14 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9.5";
+  var PP_VER = "3.9.6";
   var PP_NEW = [
-    "AIUB Portal+ is now called StudentDesk AIUB",
-    "New logo with the StudentDesk name",
-    "Everything else works the same, and your settings are kept"
+    "The GitHub project is now github.com/amitsami/studentdesk-aiub, with new download file names",
+    "Updates keep working for everyone, nothing to do on your side"
   ];
-  var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
-      UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
-      US_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/userscript/AIUB-Portal-Plus.user.js",
+  var GH_REPO = "https://github.com/amitsami/studentdesk-aiub",
+      UPD_URL = "https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/update.json",
+      US_URL = "https://raw.githubusercontent.com/amitsami/studentdesk-aiub/main/userscript/StudentDesk-AIUB.user.js",
       UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen", UPD_LATER = "aiubPlus.update.later", VER_SEEN = "aiubPlus.ver.seen";
   function verCmp(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < Math.max(a.length, b.length); i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
   function isUS() { return typeof GM_info !== "undefined" || typeof GM_xmlhttpRequest === "function" || (typeof GM !== "undefined" && !!GM); }

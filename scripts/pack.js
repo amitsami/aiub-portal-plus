@@ -1,6 +1,6 @@
 /* Store packages: node scripts/pack.js [outDir]
- *   AIUB-Portal-Plus-chromium.zip  -> Microsoft Edge Add-ons, Opera Add-ons, Chrome Web Store
- *   AIUB-Portal-Plus-firefox.zip   -> Firefox Add-ons (PC + Android)
+ *   StudentDesk-AIUB-chromium.zip  -> Microsoft Edge Add-ons, Opera Add-ons, Chrome Web Store
+ *   StudentDesk-AIUB-firefox.zip   -> Firefox Add-ons (PC + Android)
  * Same code as extension/, only the manifest is adjusted for each store. */
 const fs = require("fs"), path = require("path"), cp = require("child_process");
 const root = path.join(__dirname, ".."), src = path.join(root, "extension"), out = path.resolve(process.argv[2] || path.join(root, "store-dist"));
@@ -16,8 +16,8 @@ function pack(name, edit) {
   fs.rmSync(tmp, { recursive: true, force: true });
   console.log("Packed " + zip);
 }
-pack("AIUB-Portal-Plus-chromium.zip", (m) => { delete m.browser_specific_settings; m.background = { service_worker: "bg.js" }; return m; });
-pack("AIUB-Portal-Plus-firefox.zip", (m) => {
+pack("StudentDesk-AIUB-chromium.zip", (m) => { delete m.browser_specific_settings; m.background = { service_worker: "bg.js" }; return m; });
+pack("StudentDesk-AIUB-firefox.zip", (m) => {
   m.background = { scripts: ["bg.js"] };
   m.browser_specific_settings = { gecko: { id: "aiub-portal-plus@student.local", strict_min_version: "140.0",
     // Only a faculty review you choose to submit is sent (anonymous). Nothing is collected automatically.

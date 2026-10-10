@@ -1,13 +1,17 @@
 # Changelog
 
+## 3.9.6 - New GitHub home
+- The GitHub project is now github.com/amitsami/studentdesk-aiub, with new download file names
+- Updates keep working for everyone, nothing to do on your side
+
 ## 3.9.5 - New name: StudentDesk AIUB
-- AIUB Portal+ is now called StudentDesk AIUB
+- New name: StudentDesk AIUB
 - New logo with the StudentDesk name
 - Everything else works the same, and your settings are kept
 
 ## 3.9.4 - Store versions and new logo
-- New Portal+ logo (AIUB logo with "Portal+")
-- Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates
+- New StudentDesk logo (AIUB logo with "StudentDesk")
+- StudentDesk is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates
 - Installed from a store: updates install by themselves, so the "Update available" banner is not shown
 - Tampermonkey: "Update now" opens the update from where you installed it (GitHub or Greasy Fork)
 
@@ -24,7 +28,7 @@
 - When a new version is out, Home and More show "Update available" with the new features and a GitHub update link.
 - After you update, More shows your version, "Up to date" and what's new.
 - Give review: this semester's faculty show again (running courses were hidden during the drop/withdraw period).
-- Go to Registration -> Cancel now returns to the Portal+ home instead of the old portal.
+- Go to Registration -> Cancel now returns to the StudentDesk home instead of the old portal.
 
 ## 3.9.1 - Faculty photos load reliably.
 
@@ -90,7 +94,7 @@
 ## 3.5
 
 ```text
-- Exam routine: before every term exam the portal publishes the routine — Portal+
+- Exam routine: before every term exam the portal publishes the routine — StudentDesk
   checks for it automatically and shows it on Home ("Exam routine is out") and in
   Class Routine -> Exams, with a countdown and a red dot when it appears.
 - Live campus weather on Home for AIUB (Kuratoli, Dhaka): temperature, feels like,
@@ -154,17 +158,17 @@ FEATURES
 - Quick search: search button, Ctrl+K or "/"
 - Phone: swipe left/right to switch tabs
 - Settings: Light / Dark / Auto, accent colour, background, animations, start page.
-  Turn off "Portal+ App layout" to go back to the original portal layout.
+  Turn off "StudentDesk App layout" to go back to the original portal layout.
 INSTALL
 Remove any older version first.
 Chrome / Edge / Brave (PC)
- 1. Extract AIUB-Portal-Plus-extension.zip
+ 1. Extract StudentDesk-AIUB-extension.zip
  2. Open chrome://extensions (edge://extensions, brave://extensions)
  3. Turn on Developer mode -> Load unpacked -> choose the extracted folder
 Firefox (PC or Android) with Tampermonkey
  - Tampermonkey -> Dashboard -> Utilities -> Import from file ->
-   choose AIUB-Portal-Plus-Tampermonkey.zip -> Install
- - Or create a new script and paste the code from AIUB-Portal-Plus-code.txt
+   choose StudentDesk-AIUB-Tampermonkey.zip -> Install
+ - Or create a new script and paste the code from StudentDesk-AIUB-code.txt
 iPhone / iPad
  - Install the "Userscripts" app, enable it in Safari, and add the .user.js file.
 NOTE

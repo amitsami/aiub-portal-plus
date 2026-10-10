@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "StudentDesk AIUB — Modern UI",
   "short_name": "StudentDesk AIUB",
-  "version": "3.9.5",
+  "version": "3.9.6",
   "description": "Unofficial: modern, fast app-style design for the AIUB Student Portal. Your portal data never leaves your browser.",
   "icons": {
     "16": "icons/16.png",
@@ -43,5 +43,5 @@
       "bg.js"
     ]
   },
-  "homepage_url": "https://github.com/amitsami/aiub-portal-plus"
+  "homepage_url": "https://github.com/amitsami/studentdesk-aiub"
 }

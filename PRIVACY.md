@@ -32,4 +32,4 @@ No analytics, no ads, no trackers, no selling or sharing of data.
 - Use **Remove** on a review in **Faculty review → Give review** to delete it from the review server.
 
 ## Contact
-Questions or requests: https://github.com/amitsami/aiub-portal-plus/issues
+Questions or requests: https://github.com/amitsami/studentdesk-aiub/issues

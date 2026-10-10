@@ -110,14 +110,14 @@ INSTALL
 Remove any older version first.
 
 Chrome / Edge / Brave (PC)
- 1. Extract AIUB-Portal-Plus-extension.zip
+ 1. Extract StudentDesk-AIUB-extension.zip
  2. Open chrome://extensions (edge://extensions, brave://extensions)
  3. Turn on Developer mode -> Load unpacked -> choose the extracted folder
 
 Firefox (PC or Android) with Tampermonkey
  - Tampermonkey -> Dashboard -> Utilities -> Import from file ->
-   choose AIUB-Portal-Plus-Tampermonkey.zip -> Install
- - Or create a new script and paste the code from AIUB-Portal-Plus-code.txt
+   choose StudentDesk-AIUB-Tampermonkey.zip -> Install
+ - Or create a new script and paste the code from StudentDesk-AIUB-code.txt
 
 iPhone / iPad
  - Install the "Userscripts" app, enable it in Safari, and add the .user.js file.
