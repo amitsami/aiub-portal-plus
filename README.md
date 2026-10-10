@@ -6,6 +6,7 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 
 ## Contents
 
+- [Screenshots](#screenshots)
 - [What is StudentDesk AIUB?](#what-is-studentdesk-aiub)
 - [Which file should I download?](#which-file-should-i-download)
 - [Step-by-step install](#step-by-step-install)
@@ -18,6 +19,14 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 - [Features](#features)
 - [Privacy](#privacy)
 - [For developers](#for-developers)
+
+## Screenshots
+
+| PC: Home | PC: Faculty reviews |
+| --- | --- |
+| ![StudentDesk AIUB home on PC: next class, registration, weather](docs/screenshots/pc-home.jpg) | ![StudentDesk AIUB anonymous faculty reviews on PC](docs/screenshots/pc-faculty-reviews.jpg) |
+| **Phone: Home, routine, reviews** | **Phone: Grades, notices, settings** |
+| ![StudentDesk AIUB on phone: home, class routine and reviews](docs/screenshots/phone-home-routine-reviews.jpg) | ![StudentDesk AIUB on phone: grades, AIUB notices and settings](docs/screenshots/phone-grades-notices-settings.jpg) |
 
 ## What is StudentDesk AIUB?
 
