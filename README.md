@@ -22,11 +22,15 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 
 ## Screenshots
 
-| PC: Home | PC: Faculty reviews |
+| PC: Home | PC: Class routine |
 | --- | --- |
-| ![StudentDesk AIUB home on PC: next class, registration, weather](docs/screenshots/pc-home.jpg) | ![StudentDesk AIUB anonymous faculty reviews on PC](docs/screenshots/pc-faculty-reviews.jpg) |
-| **Phone: Home, routine, reviews** | **Phone: Grades, notices, settings** |
-| ![StudentDesk AIUB on phone: home, class routine and reviews](docs/screenshots/phone-home-routine-reviews.jpg) | ![StudentDesk AIUB on phone: grades, AIUB notices and settings](docs/screenshots/phone-grades-notices-settings.jpg) |
+| ![Home: next class, registration, weather](docs/screenshots/pc-home.jpg) | ![Class routine with free time and breaks](docs/screenshots/pc-class-routine.png) |
+| **PC: Grades & CGPA** | **PC: Faculty reviews** |
+| ![Grades & CGPA with what-if calculator](docs/screenshots/pc-grades-cgpa.png) | ![Anonymous faculty reviews](docs/screenshots/pc-faculty-reviews.jpg) |
+| **PC: Settings** | **Phone: Home, routine, reviews** |
+| ![Customize colors, glass, roundness, text size](docs/screenshots/pc-settings.png) | ![Your AIUB portal, redesigned for phone](docs/screenshots/phone-home-routine-reviews.jpg) |
+| **Phone: Grades, notices, settings** | |
+| ![Grades, AIUB notices and your own style](docs/screenshots/phone-grades-notices-settings.jpg) | |
 
 ## What is StudentDesk AIUB?
 
