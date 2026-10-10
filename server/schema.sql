@@ -1,4 +1,4 @@
--- AIUB Portal+ — Faculty review server (Supabase, free plan)
+-- StudentDesk AIUB — Faculty review server (Supabase, free plan)
 -- Supabase dashboard -> SQL Editor -> New query -> paste ALL of this -> Run.
 -- Students never touch the table directly: they can only READ the public view
 -- and call the 4 functions below. No names / student IDs are stored.

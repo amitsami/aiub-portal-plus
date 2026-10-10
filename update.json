@@ -1,12 +1,11 @@
 {
-  "version": "3.9.4",
-  "date": "2026-10-08",
-  "title": "Store versions and new logo",
+  "version": "3.9.5",
+  "date": "2026-10-10",
+  "title": "New name: StudentDesk AIUB",
   "notes": [
-    "New Portal+ logo (AIUB logo with \"Portal+\")",
-    "Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates",
-    "Installed from a store: updates install by themselves, so the \"Update available\" banner is not shown",
-    "Tampermonkey: \"Update now\" opens the update from where you installed it (GitHub or Greasy Fork)"
+    "AIUB Portal+ is now called StudentDesk AIUB",
+    "New logo with the StudentDesk name",
+    "Everything else works the same, and your settings are kept"
   ],
   "release": "https://github.com/amitsami/aiub-portal-plus/releases/latest"
 }

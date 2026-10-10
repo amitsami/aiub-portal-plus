@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.5 - New name: StudentDesk AIUB
+- AIUB Portal+ is now called StudentDesk AIUB
+- New logo with the StudentDesk name
+- Everything else works the same, and your settings are kept
+
 ## 3.9.4 - Store versions and new logo
 - New Portal+ logo (AIUB logo with "Portal+")
 - Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates

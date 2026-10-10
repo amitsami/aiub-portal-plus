@@ -1,8 +1,8 @@
-# AIUB Portal+ — Privacy Policy
+# StudentDesk AIUB — Privacy Policy
 
 _Last updated: October 2026_
 
-AIUB Portal+ is an unofficial, student-made extension / userscript that gives the AIUB Student Portal
+StudentDesk AIUB is an unofficial, student-made extension / userscript that gives the AIUB Student Portal
 (`https://portal.aiub.edu`) a modern design. It is not made by or affiliated with American International University-Bangladesh.
 
 ## What stays on your device

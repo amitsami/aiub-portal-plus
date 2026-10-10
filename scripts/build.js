@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * AIUB Portal+ build script
+ * StudentDesk AIUB build script
  * Generates userscript/AIUB-Portal-Plus.user.js from the extension/ sources:
  *   header (from manifest.json) + CSS (theme.css, shell.css, glass.css) + app.js + shell.js
  * Usage: node scripts/build.js
@@ -37,7 +37,7 @@ const header = [
 
 // Version + "What's new": manifest.json is the version, the top CHANGELOG.md entry is the feature list.
 // The build writes both into shell.js (PP_VER / PP_NEW) and update.json, so pushing a new build to GitHub
-// is enough for every Portal+ user to see "Update available" with the new features.
+// is enough for every StudentDesk user to see "Update available" with the new features.
 const top = /^## ([0-9][0-9.]*)\s*-?\s*(.*)\n([\s\S]*?)(?=^## |(?![\s\S]))/m.exec(fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8"));
 if (!top || top[1] !== manifest.version) {
   console.error("CHANGELOG.md must start with an entry for " + manifest.version + ' (for example "## ' + manifest.version + ' - Short title").');

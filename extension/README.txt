@@ -1,6 +1,6 @@
-AIUB Portal+ v3.8 — Modern app UI for portal.aiub.edu
+StudentDesk AIUB v3.8 — Modern app UI for portal.aiub.edu
 =====================================================
-Portal+ only changes how the portal looks and feels in YOUR browser.
+StudentDesk only changes how the portal looks and feels in YOUR browser.
 All data comes directly from portal.aiub.edu. Nothing is sent anywhere.
 Cached portal data is stored on this device only and is cleared when you sign out.
 
@@ -27,13 +27,13 @@ WHAT'S NEW IN 3.7
 - Speed: faster first load, background loading paced so it never blocks scrolling.
 
 FACULTY REVIEW SERVER SETUP (developer, one time, free)
-  Reviews must be stored somewhere shared so everyone can see them. Portal+ uses a
+  Reviews must be stored somewhere shared so everyone can see them. StudentDesk uses a
   free Supabase project:
   1. supabase.com -> sign in (GitHub is fine) -> New project (any name, region:
      Singapore). Wait ~2 minutes.
   2. SQL Editor -> New query -> paste ALL of server/schema.sql -> Run.
   3. Project Settings -> API: copy "Project URL" and the "anon public" key.
-  4. Either paste both in Portal+ -> Settings -> Faculty review server (this device
+  4. Either paste both in StudentDesk -> Settings -> Faculty review server (this device
      only), or put them in shell.js:  var RV_DEF = { url: "...", key: "..." };
      and rebuild, so every user of your copy is connected automatically.
   The anon key is meant to be public; students can only read the public view and
@@ -51,7 +51,7 @@ WHAT'S NEW IN 3.6
   you have not taken, text fixes, smoother resize handling.
 
 WHAT'S NEW IN 3.5
-- Exam routine: before every term exam the portal publishes the routine — Portal+
+- Exam routine: before every term exam the portal publishes the routine — StudentDesk
   checks for it automatically and shows it on Home ("Exam routine is out") and in
   Class Routine -> Exams, with a countdown and a red dot when it appears.
 - Live campus weather on Home for AIUB (Kuratoli, Dhaka): temperature, feels like,
@@ -104,7 +104,7 @@ FEATURES
 - Quick search: search button, Ctrl+K or "/"
 - Phone: swipe left/right to switch tabs
 - Settings: Light / Dark / Auto, accent colour, background, animations, start page.
-  Turn off "Portal+ App layout" to go back to the original portal layout.
+  Turn off "StudentDesk App layout" to go back to the original portal layout.
 
 INSTALL
 Remove any older version first.

@@ -1,4 +1,4 @@
-/* AIUB Portal+ — App shell.
+/* StudentDesk AIUB — App shell.
    Reads pages from portal.aiub.edu with the user's own logged-in session (same as clicking
    the links), parses them in this browser, and shows them in a new UI. Nothing is sent anywhere. */
 (function () {
@@ -281,7 +281,7 @@
     var initials = NAME.split(" ").filter(Boolean).slice(0, 2).map(function (x) { return x[0]; }).join("");
     app = document.createElement("div"); app.id = "pp-app";
     app.innerHTML =
-      '<aside class="pp-side"><div class="pp-brand"><span class="pp-logo"><img src="/Content/Images/aiub_logo_92x92.png" alt="AIUB" decoding="async"></span><div><b>AIUB Portal+</b><small>Student workspace</small></div></div>' +
+      '<aside class="pp-side"><div class="pp-brand"><span class="pp-logo"><img src="/Content/Images/aiub_logo_92x92.png" alt="AIUB" decoding="async"></span><div><b>StudentDesk AIUB</b><small>Student workspace</small></div></div>' +
       '<nav class="pp-nav">' + NAV.map(function (n, i) { return (i === 5 ? '<div class="pp-sep"></div>' : "") + '<a href="#/' + n.r + '" data-r="' + n.r + '">' + ic(n.i) + "<span>" + n.t + "</span></a>"; }).join("") +
       '<div class="pp-sep"></div><a href="#/settings" data-r="settings">' + ic("gear") + "<span>Settings</span></a></nav>" +
       '<div class="pp-me"><span class="pp-avatar">' + esc(initials) + '</span><div><b>' + esc(NAME) + '</b><small>' + esc((L("Change Password") ? "" : "") + (location.host)) + '</small></div><button class="pp-iconbtn" data-act="theme" title="Dark / Light (Alt+D)">' + ic("moon") + "</button></div></aside>" +
@@ -391,7 +391,7 @@
     var shown = false, skT = silent ? null : setTimeout(function () { if (id === renderId && !shown) scroller.innerHTML = skeleton(); }, 90);  // skeleton only if slow
     if (!force && r !== prevR) scTop(0);
     Promise.resolve().then(function () { return VIEWS[r](params, !!force && !silent); }).then(function (html) { shown = true; clearTimeout(skT); if (id !== renderId) return; swap(silent ? html.replace('class="pp-view"', 'class="pp-view pp-quiet"') : html, function () { scroller.setAttribute("data-r", r); if (VIEWS[r].after) VIEWS[r].after(params); animate(); topCheck(); requestAnimationFrame(function () { setTimeout(paintBadges, 0); }); scheduleSeen(r); }); })
-      .catch(function (e) { shown = true; clearTimeout(skT); if (id !== renderId) return; scroller.innerHTML = failView(e); if (window.console) console.warn("[Portal+]", e); });
+      .catch(function (e) { shown = true; clearTimeout(skT); if (id !== renderId) return; scroller.innerHTML = failView(e); if (window.console) console.warn("[StudentDesk]", e); });
   }
   function greet() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 20 ? "Good evening" : "Good night"; }
   function greetEmoji() { var h = new Date().getHours(); return h >= 5 && h < 12 ? "☀️" : h >= 12 && h < 14 ? "🌞" : h >= 14 && h < 17 ? "🌤️" : h >= 17 && h < 20 ? "🌆" : "🌙"; }
@@ -485,7 +485,7 @@
     if (!app) return; var cnt = {}, more = 0, tabs = {}; NAV.forEach(function (n) { if (n.tab) tabs[n.r] = 1; });
     Object.keys(TRK).forEach(function (t) { var n = freshOf(t).length; cnt[TRK[t].r] = (cnt[TRK[t].r] || 0) + n; if (!tabs[TRK[t].r]) more += n; });
     $$(".pp-nav a[data-r], .pp-tabbar a[data-r], .pp-quick a[data-r], .pp-bell", app).forEach(function (a) { var r = a.getAttribute("data-r"); setBadge(a, (r === "more" ? updN() : 0) + (r === "more" && a.closest(".pp-tabbar") ? more : cnt[r] || 0)); });
-    try { var tot = Object.keys(cnt).reduce(function (a, k) { return a + cnt[k]; }, 0); document.title = (tot ? "(" + tot + ") " : "") + "AIUB Portal+"; } catch (e) {}
+    try { var tot = Object.keys(cnt).reduce(function (a, k) { return a + cnt[k]; }, 0); document.title = (tot ? "(" + tot + ") " : "") + "StudentDesk AIUB"; } catch (e) {}
   }
 
   /* ---------- portal notifications (portal's own JSON, same as the bell on the classic page) ---------- */
@@ -632,7 +632,7 @@
     draw();
   };
 
-  /* ---------- Faculty review (anonymous, shared between all Portal+ users) ----------
+  /* ---------- Faculty review (anonymous, shared between all StudentDesk users) ----------
      Your faculty list is read from YOUR portal (semester course list -> section page -> course teacher).
      Only the review itself (faculty, course, semester, stars, comment) + a one-way scrambled code is sent
      to the review server. Your name / ID are never sent. */
@@ -1383,7 +1383,7 @@
         var saved = localStorage.getItem("pp.olmail") || (home.teams && home.teams.user) || "";
         return '<div class="pp-view">' + tabs + '<div class="pp-grid pp-g2"><div class="pp-card pp-ol"><span class="pp-olg">O</span><h3 style="margin:6px 0 0">Outlook — AIUB student mail</h3><p style="color:var(--ap-muted);margin:0">Inbox of your @student.aiub.edu account</p>' +
           '<input class="pp-input" id="pp-olmail" placeholder="24-xxxxx-x@student.aiub.edu" value="' + esc(saved) + '" style="max-width:360px;text-align:center"><div class="pp-row" style="justify-content:center"><button class="pp-btn pri" id="pp-olopen">' + ic("ext") + ' Open Outlook inbox</button><button class="pp-btn" id="pp-olcal">' + ic("cal") + " Calendar</button></div>" +
-          '<div class="pp-note">🔒 You enter your password on Microsoft\'s own sign-in page — Portal+ never sees or stores it. Microsoft doesn\'t allow Outlook inside other sites, so it opens in a new window. Choose "Stay signed in" once and next time your inbox opens directly.</div></div>' +
+          '<div class="pp-note">🔒 You enter your password on Microsoft\'s own sign-in page — StudentDesk never sees or stores it. Microsoft doesn\'t allow Outlook inside other sites, so it opens in a new window. Choose "Stay signed in" once and next time your inbox opens directly.</div></div>' +
           '<div class="pp-card"><h3>' + ic("lock") + " Microsoft Teams / Office login</h3>" + (home.teams ? '<div class="pp-list"><div class="pp-item"><div class="pp-t"><small>User name</small><b>' + esc(home.teams.user) + '</b></div></div><div class="pp-item pp-click" title="Click to show"><div class="pp-t"><small>One-time password (click to show)</small><b class="pp-secret" id="pp-tpass">' + esc(home.teams.pass) + "</b></div></div></div>" : '<div class="pp-empty">Teams info not found</div>') +
           '<div class="pp-row" style="margin-top:14px"><a class="pp-btn" target="_blank" rel="noopener" href="https://teams.microsoft.com/">Teams</a><a class="pp-btn" target="_blank" rel="noopener" href="https://www.office.com/">Office 365</a><a class="pp-btn" target="_blank" rel="noopener" href="https://onedrive.live.com/">OneDrive</a></div></div></div></div>';
       });
@@ -1424,12 +1424,11 @@
   /* ---------- What's new + update check ----------
      Reads the public file update.json from the GitHub repo (nothing is sent) at most every 6 hours.
      When a newer version exists, More shows the new features and a GitHub update link. */
-  var PP_VER = "3.9.4";
+  var PP_VER = "3.9.5";
   var PP_NEW = [
-    "New Portal+ logo (AIUB logo with \"Portal+\")",
-    "Portal+ is now available from browser stores (Edge, Firefox, Opera) and Greasy Fork, with automatic updates",
-    "Installed from a store: updates install by themselves, so the \"Update available\" banner is not shown",
-    "Tampermonkey: \"Update now\" opens the update from where you installed it (GitHub or Greasy Fork)"
+    "AIUB Portal+ is now called StudentDesk AIUB",
+    "New logo with the StudentDesk name",
+    "Everything else works the same, and your settings are kept"
   ];
   var GH_REPO = "https://github.com/amitsami/aiub-portal-plus",
       UPD_URL = "https://raw.githubusercontent.com/amitsami/aiub-portal-plus/main/update.json",
@@ -1437,7 +1436,7 @@
       UPD_KEY = "aiubPlus.update", UPD_SEEN = "aiubPlus.update.seen", UPD_LATER = "aiubPlus.update.later", VER_SEEN = "aiubPlus.ver.seen";
   function verCmp(a, b) { a = String(a).split("."); b = String(b).split("."); for (var i = 0; i < Math.max(a.length, b.length); i++) { var d = (+a[i] || 0) - (+b[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
   function isUS() { return typeof GM_info !== "undefined" || typeof GM_xmlhttpRequest === "function" || (typeof GM !== "undefined" && !!GM); }
-  /* Installed from a browser store (Edge, Opera, Chrome, Firefox)? Then the store updates Portal+ by itself. */
+  /* Installed from a browser store (Edge, Opera, Chrome, Firefox)? Then the store updates StudentDesk by itself. */
   function storeName() {
     try {
       var rt = typeof browser !== "undefined" && browser.runtime && browser.runtime.getManifest ? browser.runtime : typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getManifest ? chrome.runtime : null;
@@ -1467,13 +1466,13 @@
     var notes = d ? (Array.isArray(d.notes) ? d.notes : []) : (rd && rd.version === PP_VER && Array.isArray(rd.notes) && rd.notes.length ? rd.notes : PP_NEW);
     var link = d ? (us ? usLink() : (d.release || GH_REPO + "/releases/latest")) : GH_REPO + "/releases/latest";
     var head = d ? ic("spark") + " Update available" + NEWDOT + '<span class="pp-more"><span class="pp-chip">v' + esc(d.version) + "</span></span>"
-                 : ic("check") + " AIUB Portal+ v" + PP_VER + '<span class="pp-more"><span class="pp-chip ok">\u2713 Up to date</span></span>';
+                 : ic("check") + " StudentDesk AIUB v" + PP_VER + '<span class="pp-more"><span class="pp-chip ok">\u2713 Up to date</span></span>';
     return '<div class="pp-card pp-upd' + (d ? " pp-upd-new" : "") + '" id="pp-upd"><h3>' + head + "</h3>" +
-      '<p class="pp-note" style="margin:0 0 8px">' + (d ? "<b>AIUB Portal+ v" + esc(d.version) + "</b>" + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You are using the latest version. What\u2019s new in v" + PP_VER + ":") + "</p>" +
+      '<p class="pp-note" style="margin:0 0 8px">' + (d ? "<b>StudentDesk AIUB v" + esc(d.version) + "</b>" + (d.date ? " (" + esc(d.date) + ")" : "") + " is out. You have v" + PP_VER + ". New in this update:" : "You are using the latest version. What\u2019s new in v" + PP_VER + ":") + "</p>" +
       '<ul class="pp-updl">' + notes.slice(0, 10).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
       (d && st ? '<p class="pp-note" style="margin:0 0 10px">Installed from <b>' + esc(st) + "</b>: your browser installs this update automatically (usually within a day after the store approves it). Nothing to do.</p>" : "") +
       (!d && st ? '<p class="pp-note" style="margin:0 0 10px">Updates install automatically from <b>' + esc(st) + "</b>.</p>" : "") +
-      (d && !st ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your Portal+ folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
+      (d && !st ? '<p class="pp-note" style="margin:0 0 10px">' + (us ? "Tap <b>Update now</b>. Tampermonkey opens the new version, then tap <b>Update</b> / <b>Install</b>." : "Download the new extension zip, replace the files in your StudentDesk folder, then click <b>Reload</b> on the extensions page.") + "</p>" : "") +
       '<div class="pp-row" style="gap:8px;flex-wrap:wrap">' + (d && !st ? '<a class="pp-btn pri sm" href="' + esc(link) + '" target="_blank" rel="noopener">' + ic("refresh") + (us ? " Update now" : " Download update") + "</a>" : "") +
       '<a class="pp-btn sm" href="' + GH_REPO + '/releases/latest" target="_blank" rel="noopener">' + ic("github") + " View on GitHub</a></div></div>";
   }
@@ -1513,7 +1512,7 @@
         '<div class="pp-grid pp-g3">' + MENU.map(function (g) { return '<div class="pp-card"><h3>' + ic(GROUP_IC[g.g] || "grid") + " " + esc(g.g) + '</h3><div class="pp-list">' + g.items.map(function (it) { return '<a class="pp-item" style="padding:10px 12px" href="' + classic(it.h) + '"><div class="pp-t"><b style="font-size:13.5px">' + esc(it.t) + "</b></div>" + ic("back", "flip") + "</a>"; }).join("") + "</div></div>"; }).join("") +
         '<div class="pp-card"><h3>' + ic("lock") + ' Account</h3><div class="pp-list"><a class="pp-item" href="#/settings"><div class="pp-t"><b>Settings & theme</b></div></a><a class="pp-item" href="' + classic(L("Change Password") || "/Student/Credential/ChangePassword") + '"><div class="pp-t"><b>Change password</b></div></a>' +
         '<a class="pp-item" href="' + classic(location.pathname + location.search) + '"><div class="pp-t"><b>Classic portal view</b><small>Original portal layout</small></div></a><a class="pp-item" href="/Login/Logout" id="pp-logout" style="color:#ef4444"><div class="pp-t"><b>Log out</b></div>' + ic("out") + "</a></div></div></div></div>" +
-        '<div class="pp-card pp-dev"><h3>' + ic("user") + ' Developer info</h3><div class="pp-row" style="gap:14px;align-items:center"><span class="pp-avatar" style="width:52px;height:52px;font-size:18px">AS</span><div class="pp-t" style="flex:1;min-width:0"><b style="font-size:16px">Amit Hasan Sami</b><small>Developer of AIUB Portal+</small></div></div>' +
+        '<div class="pp-card pp-dev"><h3>' + ic("user") + ' Developer info</h3><div class="pp-row" style="gap:14px;align-items:center"><span class="pp-avatar" style="width:52px;height:52px;font-size:18px">AS</span><div class="pp-t" style="flex:1;min-width:0"><b style="font-size:16px">Amit Hasan Sami</b><small>Developer of StudentDesk AIUB</small></div></div>' +
         '<div class="pp-list" style="margin-top:12px"><a class="pp-item" href="mailto:amitsami110@gmail.com">' + ic("mail") + '<div class="pp-t"><small>Email</small><b>amitsami110@gmail.com</b></div></a>' +
         '<a class="pp-item" href="https://github.com/amitsami" target="_blank" rel="noopener">' + ic("github") + '<div class="pp-t"><small>GitHub</small><b>github.com/amitsami</b></div>' + ic("ext") + "</a></div></div>";
     });
@@ -1528,7 +1527,7 @@
       '<div class="pp-item" style="display:flex;align-items:center;gap:12px"><div class="pp-t" style="flex:1;min-width:0"><b>Start page</b><small>Page shown when the portal opens</small></div><select class="pp-input" id="pp-start" style="width:auto">' + NAV.map(function (n) { return '<option value="' + n.r + '"' + (n.r === sp ? " selected" : "") + ">" + n.t + "</option>"; }).join("") + "</select></div>" +
       '<button class="pp-item pp-click" data-act="refresh" style="text-align:left"><div class="pp-t"><b>Refresh all data</b><small>Reload everything from the portal</small></div>' + ic("refresh") + "</button>" +
       '<a class="pp-item" href="' + classic(location.pathname + location.search) + '"><div class="pp-t"><b>Classic portal view</b><small>Use the original layout</small></div>' + ic("layers") + "</a></div>" +
-      '<p class="pp-note" style="margin-top:14px">🔒 Portal+ runs only in your browser. All data comes directly from portal.aiub.edu and is never sent anywhere — except a faculty review you choose to submit (anonymous: no name, no ID). Settings are saved on this device only.<br><br>⌨️ Shortcuts: Alt+1…7 page change · Alt+D dark mode</p></div>' + rvSetCard() + '</div></div>';
+      '<p class="pp-note" style="margin-top:14px">🔒 StudentDesk runs only in your browser. All data comes directly from portal.aiub.edu and is never sent anywhere — except a faculty review you choose to submit (anonymous: no name, no ID). Settings are saved on this device only.<br><br>⌨️ Shortcuts: Alt+1…7 page change · Alt+D dark mode</p></div>' + rvSetCard() + '</div></div>';
   };
   VIEWS.settings.after = function () {
     var panel = document.getElementById("ap-panel"), slot = $("#pp-setslot", app);
@@ -1548,7 +1547,7 @@
     var startU = (fr.getAttribute("src") || "").split("?")[0], HOME_RX = /^\/Student\/?(Home(\/Index)?\/?)?$/i;
     fr.addEventListener("load", function () { try { var d = fr.contentDocument; if (d && d.getElementById("loginForm")) { location.href = "/"; return; }
       // A classic page (e.g. Registration -> Cancel, or registration closed) went back to the portal home:
-      // show the Portal+ home instead of the old layout.
+      // show the StudentDesk home instead of the old layout.
       var pth = fr.contentWindow.location.pathname;
       if (current === "classic" && HOME_RX.test(pth) && !HOME_RX.test(startU)) { go("#/home"); }
     } catch (e) {} });
@@ -1561,7 +1560,7 @@
   /* ---------- Quick search (Ctrl+K / "/" ) ---------- */
   function openSearch() {
     if (!app) return; var old = $("#pp-cmd", app); if (old) { old.remove(); return; }
-    var items = NAV.map(function (n) { return { t: n.t, s: "Portal+", h: "#/" + n.r, i: n.i }; }).concat([{ t: "Settings", s: "Portal+", h: "#/settings", i: "gear" }, { t: "Faculty list", s: "More · aiub.edu", h: "#/faculty", i: "user" }, { t: "Exam routine", s: "Routine", h: "#/schedule", i: "file", sv: "exams" }, { t: "Campus weather", s: "Home", h: "#/home", i: "sun" }, { t: "Free time", s: "Routine", h: "#/schedule", i: "cal", sv: "free" }, { t: "Offered for me", s: "Courses", h: "#/courses", i: "list", ct: "offered" }, { t: "Remaining courses", s: "Courses", h: "#/courses", i: "book", ct: "remaining" }, { t: "Offered courses", s: "Courses", h: "#/courses", i: "list", ct: "offered" }]);
+    var items = NAV.map(function (n) { return { t: n.t, s: "StudentDesk", h: "#/" + n.r, i: n.i }; }).concat([{ t: "Settings", s: "StudentDesk", h: "#/settings", i: "gear" }, { t: "Faculty list", s: "More · aiub.edu", h: "#/faculty", i: "user" }, { t: "Exam routine", s: "Routine", h: "#/schedule", i: "file", sv: "exams" }, { t: "Campus weather", s: "Home", h: "#/home", i: "sun" }, { t: "Free time", s: "Routine", h: "#/schedule", i: "cal", sv: "free" }, { t: "Offered for me", s: "Courses", h: "#/courses", i: "list", ct: "offered" }, { t: "Remaining courses", s: "Courses", h: "#/courses", i: "book", ct: "remaining" }, { t: "Offered courses", s: "Courses", h: "#/courses", i: "list", ct: "offered" }]);
     ((peek("notices1") || {}).items || []).forEach(function (n) { items.push({ t: n.title, s: "Notice · " + n.day + " " + n.mon, h: "#/notice?u=" + encodeURIComponent(n.u), i: "bell" }); });
     MENU.forEach(function (g) { g.items.forEach(function (it) { if (it.h && it.h.charAt(0) === "/") items.push({ t: it.t, s: g.g, h: classic(it.h), i: "ext" }); }); });
     var box = document.createElement("div"); box.id = "pp-cmd";

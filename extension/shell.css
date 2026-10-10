@@ -1,5 +1,5 @@
 /* ===========================================================
-   AIUB Portal+  —  App shell (new UI on top of the real portal)
+   StudentDesk AIUB  —  App shell (new UI on top of the real portal)
    =========================================================== */
 html.pp-on body > *:not(#pp-app):not(#ap-bg):not(#ap-progress):not(.modal):not(.modal-backdrop):not(#dvLoading):not(#backOpacity):not(script) { display: none !important; }
 html.pp-on body > #ap-fab, html.pp-on body > #ap-panel { display: none !important; }

@@ -1,6 +1,6 @@
-# Install AIUB Portal+
+# Install StudentDesk AIUB
 
-AIUB Portal+ works on phone and PC. Pick one option.
+StudentDesk AIUB works on phone and PC. Pick one option.
 
 ## Quick links
 

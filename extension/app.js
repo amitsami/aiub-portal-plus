@@ -1,4 +1,4 @@
-/* AIUB Portal+ — UI layer only. No data is read, stored or sent anywhere.
+/* StudentDesk AIUB — UI layer only. No data is read, stored or sent anywhere.
    Settings are saved in this browser's localStorage only. */
 (function () {
   "use strict";
@@ -62,9 +62,9 @@
   function buildChrome() {
     if (!document.getElementById("ap-bg")) document.body.insertBefore(el('<div id="ap-bg" aria-hidden="true"><i></i><i></i><i></i></div>'), document.body.firstChild);
     if (!document.getElementById("ap-progress")) document.body.appendChild(el('<div id="ap-progress"></div>'));
-    var fab = el('<button id="ap-fab" type="button" title="Portal+ Settings (Alt+S)" aria-label="Theme settings">' + ICON.gear + "</button>");
+    var fab = el('<button id="ap-fab" type="button" title="StudentDesk Settings (Alt+S)" aria-label="Theme settings">' + ICON.gear + "</button>");
     document.body.appendChild(fab);
-    var p = el('<div id="ap-panel" role="dialog" aria-label="Portal+ settings"></div>');
+    var p = el('<div id="ap-panel" role="dialog" aria-label="StudentDesk settings"></div>');
     document.body.appendChild(p);
     renderPanel(p);
     fab.addEventListener("click", function (e) { e.stopPropagation(); p.classList.toggle("open"); });
@@ -84,17 +84,17 @@
   function rangeVal(name) { var v = S[name]; return name === "scale" ? v + "%" : name === "blur" ? (v ? v + "px" : "Off") : v + "px"; }
   function range(name, label, min, max, step) { return '<div class="ap-row"><span>' + label + '</span><span class="ap-rg"><input type="range" data-k="' + name + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + S[name] + '" aria-label="' + label + '"><output data-o="' + name + '">' + rangeVal(name) + "</output></span></div>"; }
   /* live preview: shows Glass blur, Roundness and Text size the moment a slider moves */
-  function preview() { return '<div class="ap-pv" aria-hidden="true"><i></i><i></i><i></i><span class="ap-pv-bgt">AIUB Portal+</span><div class="ap-pv-glass"><b>Live preview</b><small>Glass blur · Roundness · Text size</small><span class="ap-pv-chip">A</span></div></div>'; }
+  function preview() { return '<div class="ap-pv" aria-hidden="true"><i></i><i></i><i></i><span class="ap-pv-bgt">StudentDesk AIUB</span><div class="ap-pv-glass"><b>Live preview</b><small>Glass blur · Roundness · Text size</small><span class="ap-pv-chip">A</span></div></div>'; }
 
   function renderPanel(p) {
     p.innerHTML =
-      "<h3>✨ Portal+ Settings</h3><div class='ap-sub'>Your portal, your style. Settings are saved in this browser only.</div>" +
+      "<h3>✨ StudentDesk Settings</h3><div class='ap-sub'>Your portal, your style. Settings are saved in this browser only.</div>" +
       "<div class='ap-sec'>Appearance</div>" + seg("mode", [["light", "☀️ Light"], ["dark", "🌙 Dark"], ["auto", "🖥️ Auto"]]) +
       "<div class='ap-sec'>Accent color</div><div class='ap-sw'>" +
         PRESETS.map(function (c) { return '<button type="button" data-c="' + c + '" class="' + (S.accent.toLowerCase() === c ? "on" : "") + '" style="background:' + c + '" aria-label="' + c + '"></button>'; }).join("") +
         '<label title="Custom color"><input type="color" value="' + S.accent + '"></label></div>' +
       "<div class='ap-sec'>Background</div>" + seg("bg", [["aurora", "🌌 Aurora"], ["mesh", "🎨 Mesh"], ["solid", "⬜ Solid"]]) +
-      "<div class='ap-sec'>Layout</div>" + toggle("app", "✨ Portal+ App layout") +
+      "<div class='ap-sec'>Layout</div>" + toggle("app", "✨ StudentDesk App layout") +
       "<div class='ap-sec'>Customize</div>" + preview() +
         range("blur", "Glass blur", 0, 40, 1) + range("radius", "Roundness", 4, 28, 1) + range("scale", "Text size", 85, 125, 5) +
         toggle("anim", "Animations") + toggle("trans", "Page transitions") + toggle("compact", "Compact tables") + toggle("grades", "Colorful grade badges") + toggle("privacy", "Privacy blur (password/CGPA)") +

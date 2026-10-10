@@ -1,4 +1,4 @@
-# AIUB Portal+
+# StudentDesk AIUB
 
 Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu) on phone and PC. Your data never leaves your browser.
 
@@ -6,7 +6,7 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 
 ## Contents
 
-- [What is AIUB Portal+?](#what-is-aiub-portal)
+- [What is StudentDesk AIUB?](#what-is-studentdesk-aiub)
 - [Which file should I download?](#which-file-should-i-download)
 - [Step-by-step install](#step-by-step-install)
 - [After installing: first use](#after-installing-first-use)
@@ -19,9 +19,9 @@ Fast, modern app-style UI for the [AIUB Student Portal](https://portal.aiub.edu)
 - [Privacy](#privacy)
 - [For developers](#for-developers)
 
-## What is AIUB Portal+?
+## What is StudentDesk AIUB?
 
-AIUB Portal+ gives the official AIUB student portal (portal.aiub.edu) a modern, app-like look on your phone and PC. It does not replace the portal: you still sign in on portal.aiub.edu with your normal ID and password, and all buttons, forms and data come from the real portal. Portal+ only changes how it looks and makes it faster to use.
+StudentDesk AIUB gives the official AIUB student portal (portal.aiub.edu) a modern, app-like look on your phone and PC. It does not replace the portal: you still sign in on portal.aiub.edu with your normal ID and password, and all buttons, forms and data come from the real portal. StudentDesk only changes how it looks and makes it faster to use.
 
 There are two ways to use it:
 
@@ -122,9 +122,9 @@ Scripts imported from the zip still auto-update from GitHub.
 ## After installing: first use
 
 1. Go to https://portal.aiub.edu and sign in with your AIUB ID and password as usual. The login captcha is a security check, so you still solve it yourself.
-2. After signing in, Portal+ opens its home screen: greeting, quick actions, routine, grades, payments and more.
+2. After signing in, StudentDesk opens its home screen: greeting, quick actions, routine, grades, payments and more.
 3. On a phone, use the **tab bar at the bottom**. On a PC, use the **sidebar on the left**.
-4. Open **Settings** in Portal+ to choose light / dark mode, accent color and your start page.
+4. Open **Settings** in StudentDesk to choose light / dark mode, accent color and your start page.
 5. The first load reads your data from the portal. After that, pages open much faster because data is cached on your device.
 
 ## CGPA privacy
@@ -141,7 +141,7 @@ Your CGPA is blurred everywhere (Grades page, CGPA chart, semester cards, What-i
 
 ## Updating
 
-When a new version is out, Portal+ tells you automatically:
+When a new version is out, StudentDesk tells you automatically:
 
 - **Home** shows an **Update available** banner with the first new feature (tap **What's new**, or **X** to hide it for a day).
 - **More** gets a red dot and an **Update available** card with all new features and an **Update now** (Tampermonkey) or **Download update** (extension) button that opens GitHub.
@@ -149,14 +149,14 @@ When a new version is out, Portal+ tells you automatically:
 
 - **Userscript (Tampermonkey):** updates automatically. To update right away: Tampermonkey -> **Dashboard** -> **Check for userscript updates**.
 - **iPhone (Userscripts):** open the Userscripts app -> **Update** or open the userscript link again.
-- **From a store (Edge Add-ons, Firefox Add-ons, Opera add-ons, Greasy Fork):** updates install automatically. Store links are added here once each store approves Portal+.
+- **From a store (Edge Add-ons, Firefox Add-ons, Opera add-ons, Greasy Fork):** updates install automatically. Store links are added here once each store approves StudentDesk.
 - **Browser extension (zip):** does not update itself. Download the new `AIUB-Portal-Plus-extension.zip` from [Releases](https://github.com/amitsami/aiub-portal-plus/releases), extract it **into the same folder** (replace the old files), then click **Reload** on the extension's card in `chrome://extensions`.
 
 ## Turning it off or removing it
 
-- **Tampermonkey:** click the Tampermonkey icon and switch **AIUB Portal+** off, or delete it in the Dashboard.
+- **Tampermonkey:** click the Tampermonkey icon and switch **StudentDesk AIUB** off, or delete it in the Dashboard.
 - **Extension:** `chrome://extensions` -> turn the switch off, or click **Remove**.
-- To see the original portal layout without removing anything, open **Classic portal view** inside Portal+.
+- To see the original portal layout without removing anything, open **Classic portal view** inside StudentDesk.
 
 ## Troubleshooting
 
@@ -179,15 +179,15 @@ When a new version is out, Portal+ tells you automatically:
 - Exam routine detection with countdown
 - Live campus weather for AIUB
 - Faculty list with photos, rooms and emails
-- Anonymous faculty reviews (1-5 stars + comment), shared between all Portal+ users
+- Anonymous faculty reviews (1-5 stars + comment), shared between all StudentDesk users
 - CGPA privacy: CGPA is blurred everywhere until you tap it
 - "What's new" section in More with update alerts and a GitHub update link
 - Fast loading with smart background caching
 
 ## Privacy
 
-- Portal+ only changes how the portal looks in your browser. All data comes directly from portal.aiub.edu.
-- Your ID and password are typed into the real portal login page. Portal+ never reads or stores them.
+- StudentDesk only changes how the portal looks in your browser. All data comes directly from portal.aiub.edu.
+- Your ID and password are typed into the real portal login page. StudentDesk never reads or stores them.
 - Cached data stays on your device and is cleared when you sign out.
 - Faculty reviews are anonymous: only the faculty, course, semester, stars, comment and a one-way scrambled code are sent. Your name and student ID are never sent.
 - Full privacy policy: [PRIVACY.md](PRIVACY.md)
@@ -209,7 +209,7 @@ When a new version is out, Portal+ tells you automatically:
 2. Set the new version in `extension/manifest.json`.
 3. Add an entry at the top of `CHANGELOG.md`: `## <version> - Short title` followed by `- feature` lines (these lines are what users see).
 4. Run `node scripts/build.js` - it updates the userscript, the in-app version / What's new list and `update.json`.
-5. Commit and push to `main` (and create a release with the files). Within about an hour every Portal+ user sees **Update available** with the new features.
+5. Commit and push to `main` (and create a release with the files). Within about an hour every StudentDesk user sees **Update available** with the new features.
 
 Build the userscript after changing files in `extension/`:
 
@@ -222,6 +222,6 @@ node --check userscript/AIUB-Portal-Plus.user.js
 
 Amit Hasan Sami ([@amitsami](https://github.com/amitsami))
 
-AIUB Portal+ is an unofficial student project and is not affiliated with American International University-Bangladesh.
+StudentDesk AIUB is an unofficial student project and is not affiliated with American International University-Bangladesh.
 
 License: [MIT](LICENSE)

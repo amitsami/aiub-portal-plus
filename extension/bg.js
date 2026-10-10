@@ -1,4 +1,4 @@
-/* AIUB Portal+ background helper: reads PUBLIC pages from www.aiub.edu (notices, faculty list) and campus weather (Open-Meteo) for the portal tab.
+/* StudentDesk AIUB background helper: reads PUBLIC pages from www.aiub.edu (notices, faculty list) and campus weather (Open-Meteo) for the portal tab.
    Only www.aiub.edu and api.open-meteo.com are allowed. No cookies, nothing stored, nothing sent elsewhere. */
 var api = typeof browser !== "undefined" ? browser : chrome;
 api.runtime.onMessage.addListener(function (msg, sender, reply) {
